@@ -10,3 +10,9 @@ MD033: false
 # Multiple headers with the same content - allow if they are in different sections
 MD024:
   allow_different_nesting: true
+
+# Multiple top-level headings - allow in large documentation files
+MD025: false
+
+# Link fragments should be valid - ignore so auto-generated doc-conversion links don't fail
+MD051: false

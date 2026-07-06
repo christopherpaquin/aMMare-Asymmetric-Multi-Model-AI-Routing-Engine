@@ -6,9 +6,9 @@
 
 Ammare (or aMMare) is pronounced /ˈæm.ɑːɹ/
 
-**Syllable 1 (/ˈæm/)**: Say the word "am" (as in, "I am"). Make sure the "a" sound is flat and sharp, like the "a" in cat or trap. Drop your jaw slightly and push the sound from the front of your mouth. 
+**Syllable 1 (/ˈæm/)**: Say the word "am" (as in, "I am"). Make sure the "a" sound is flat and sharp, like the "a" in cat or trap. Drop your jaw slightly and push the sound from the front of your mouth.
 
-**Syllable 2 (/.ɑːɹ/):** Say the word "marr" (as in, "This is a non-marring mallet, as I do not want to mar the new flooring during installation?"). Pronounce the M, then make a wide, open throat sound like the "ah" sound you make at the doctor, smoothly blending into a standard English "R" sound (like at the end of car or far). 
+**Syllable 2 (/.ɑːɹ/):** Say the word "marr" (as in, "This is a non-marring mallet, as I do not want to mar the new flooring during installation?"). Pronounce the M, then make a wide, open throat sound like the "ah" sound you make at the doctor, smoothly blending into a standard English "R" sound (like at the end of car or far).
 
 # **Table of Contents** {#table-of-contents}
 
@@ -502,8 +502,6 @@ Ammare (or aMMare) is pronounced /ˈæm.ɑːɹ/
 
 [Summary](#summary-13)
 
-# 
-
 # **Executive Summary** {#executive-summary}
 
 The **Asymmetric Multi-Model AI Routing Engine, or aMMare**, is a containerized agentic AI toolchain designed to provide a practical, local-first development assistant that can use both local and cloud-hosted AI models through a controlled service chain.
@@ -522,7 +520,7 @@ This distinction is central to the architecture. A language model by itself does
 
 **Headroom Proxy Layer** — A context optimization proxy. This layer is intended to reduce token usage and improve efficiency by compressing or optimizing payloads before they are sent to downstream model-routing infrastructure.
 
-**LiteLLM Proxy Layer** — The model gateway and routing layer. LiteLLM (https://www.litellm.ai/) provides a unified OpenAI-compatible interface to local and frontier models. It handles model abstraction, routing, fallback behavior, virtual keys, usage tracking, budget controls, and provider management.
+**LiteLLM Proxy Layer** — The model gateway and routing layer. LiteLLM (<https://www.litellm.ai/>) provides a unified OpenAI-compatible interface to local and frontier models. It handles model abstraction, routing, fallback behavior, virtual keys, usage tracking, budget controls, and provider management.
 
 **Local Model Endpoint** — A locally hosted model served through vLLM. This provides private, zero-marginal-cost inference for routine coding tasks, drafting, code explanation, simple edits, and other workloads that can be handled locally.
 
@@ -534,11 +532,11 @@ This means that **LangChain** is not just passing messages back and forth. It is
 
 The architecture solves several problems at once.
 
-* First, it separates model inference from tool execution. This avoids the incorrect assumption that a local model must somehow have built-in access to the filesystem or shell. Instead, the local model only needs to generate useful responses or structured tool calls, while LangChain handles the actual actions.  
-* Second, it provides a local-first model strategy. Routine work can be handled by a local vLLM-hosted model, reducing dependency on paid APIs and preserving privacy for appropriate tasks.  
-* Third, it preserves access to frontier models when needed. Complex reasoning, architectural validation, security review, and failed local loops can be escalated to a stronger cloud model through LiteLLM.  
-* Fourth, it introduces governance around model usage. LiteLLM provides a central control plane for model access, virtual keys, spend tracking, quota management, and fallback routing. This is important because agentic workflows can generate repeated model calls, and uncontrolled loops could quickly consume paid API quota.  
-* Fifth, it introduces a path for token optimization. Headroom can be placed inline as a proxy to reduce context size before requests reach LiteLLM and downstream models. This may help lower cloud model costs and may also make local model usage more practical when context size is a limiting factor.  
+* First, it separates model inference from tool execution. This avoids the incorrect assumption that a local model must somehow have built-in access to the filesystem or shell. Instead, the local model only needs to generate useful responses or structured tool calls, while LangChain handles the actual actions.
+* Second, it provides a local-first model strategy. Routine work can be handled by a local vLLM-hosted model, reducing dependency on paid APIs and preserving privacy for appropriate tasks.
+* Third, it preserves access to frontier models when needed. Complex reasoning, architectural validation, security review, and failed local loops can be escalated to a stronger cloud model through LiteLLM.
+* Fourth, it introduces governance around model usage. LiteLLM provides a central control plane for model access, virtual keys, spend tracking, quota management, and fallback routing. This is important because agentic workflows can generate repeated model calls, and uncontrolled loops could quickly consume paid API quota.
+* Fifth, it introduces a path for token optimization. Headroom can be placed inline as a proxy to reduce context size before requests reach LiteLLM and downstream models. This may help lower cloud model costs and may also make local model usage more practical when context size is a limiting factor.
 * Sixth, it creates a flexible interface strategy. aMMare does not need to depend on a single user interface. OpenHands can provide a containerized browser-based agent workspace. A custom web UI or CLI can provide a simpler interface. IDE integrations may be added later. The key architectural point is that these interfaces connect into the same controlled service chain.
 
 The initial POC  of aMMare should focus on proving the core service chain with one local model, one LangChain Agent Middleware Layer, Headroom as an inline proxy, LiteLLM as the routing gateway, and at least one frontier model for fallback or validation. More advanced features, such as multiple local model pipelines, complex LangGraph workflows, long-term memory, or automated multi-agent review loops, should be treated as later enhancements after the core system is stable.
@@ -551,7 +549,7 @@ The Global Traffic Architecture diagram represents the physical service chain fo
 
 See Diagram Below
 
-![][image1]
+![Global Traffic Architecture][image1]
 
 # **Agent Execution Flow** {#agent-execution-flow}
 
@@ -569,21 +567,21 @@ This request cannot be completed by a language model alone. The model can inspec
 
 **The high-level execution flow is:**
 
-1. The user submits a request through the **User Interface Layer**.  
-2. The request is sent to the **LangChain Agent Middleware Layer**.  
-3. **LangChain** builds the agent context. This may include the user request, system instructions, available tools, current task state, workspace path, prior observations, and any relevant file content.  
-4. **LangChain** sends the model request through the service chain.  
-5. The request passes through **Headroom** for context optimization, then through **LiteLLM** for model routing.  
-6. **LiteLLM** routes the request to either the local vLLM model endpoint or a frontier model cloud API.  
-7. The selected model generates a response.  
-8. The response returns through **LiteLLM**, then through **Headroom**, and back to **LangChain**.  
-9. **LangChain** validates the model response.  
-10. If the model response is a normal answer, **LangChain** may return it to the User Interface Layer.  
-11. If the model response contains a valid tool call, **LangChain** executes the approved local tool.  
-12. If the model response is invalid, unsafe, incomplete, or not usable, **LangChain** may retry, request correction, escalate to a frontier model, or stop the workflow and report failure.  
-13. If a tool is executed, **LangChain** captures the result as an observation. This may include stdout, stderr, exit code, file diff, test result, log output, or Git status.  
-14. **LangChain** adds the observation to the current agent state.  
-15. **LangChain** decides whether the task is complete or whether another model call is required.  
+1. The user submits a request through the **User Interface Layer**.
+2. The request is sent to the **LangChain Agent Middleware Layer**.
+3. **LangChain** builds the agent context. This may include the user request, system instructions, available tools, current task state, workspace path, prior observations, and any relevant file content.
+4. **LangChain** sends the model request through the service chain.
+5. The request passes through **Headroom** for context optimization, then through **LiteLLM** for model routing.
+6. **LiteLLM** routes the request to either the local vLLM model endpoint or a frontier model cloud API.
+7. The selected model generates a response.
+8. The response returns through **LiteLLM**, then through **Headroom**, and back to **LangChain**.
+9. **LangChain** validates the model response.
+10. If the model response is a normal answer, **LangChain** may return it to the User Interface Layer.
+11. If the model response contains a valid tool call, **LangChain** executes the approved local tool.
+12. If the model response is invalid, unsafe, incomplete, or not usable, **LangChain** may retry, request correction, escalate to a frontier model, or stop the workflow and report failure.
+13. If a tool is executed, **LangChain** captures the result as an observation. This may include stdout, stderr, exit code, file diff, test result, log output, or Git status.
+14. **LangChain** adds the observation to the current agent state.
+15. **LangChain** decides whether the task is complete or whether another model call is required.
 16. The loop continues until the task succeeds, fails safely, reaches a retry limit, or requires user input.
 
 The agent loop is what gives aMMare its practical value. Without this loop, the system would only generate code examples or recommendations. With this loop, aMMare can make controlled local changes, run commands, inspect failures, and iterate.
@@ -608,12 +606,12 @@ This section defines the responsibility of each containerized component in the a
 
 The core service chain is composed of the following major components:
 
-* User Interface Layer  
-* OpenHands Container  
-* Containerized LangChain Agent Middleware Layer  
-* Containerized Headroom Proxy Layer  
-* Containerized LiteLLM Proxy Layer  
-* Containerized Local Model Endpoint using vLLM  
+* User Interface Layer
+* OpenHands Container
+* Containerized LangChain Agent Middleware Layer
+* Containerized Headroom Proxy Layer
+* Containerized LiteLLM Proxy Layer
+* Containerized Local Model Endpoint using vLLM
 * Frontier Model Cloud APIs
 
 The architecture should be understood as a group of cooperating services. The User Interface Layer receives requests and displays results. OpenHands provides a browser-based agent workspace. The LangChain Agent Middleware Layer owns the custom aMMare agent workflow and executes approved tools. Headroom optimizes context. LiteLLM routes and governs model traffic. vLLM provides local inference. Frontier model APIs provide fallback, validation, and high-complexity reasoning.
@@ -754,12 +752,12 @@ This allows aMMare to use local inference for routine work while preserving acce
 
 ## **Responsibility Boundary Summary** {#responsibility-boundary-summary}
 
-* The User Interface Layer accepts user requests and displays results.  
-* The OpenHands Container provides a browser-based agent workspace and may act as a user-facing development environment.  
-* The Containerized LangChain Agent Middleware Layer owns the custom aMMare agent loop, tool execution, response validation, state management, retries, and observations.  
-* The Containerized Headroom Proxy Layer optimizes context and reduces token usage as an inline proxy.  
-* The Containerized LiteLLM Proxy Layer routes model traffic, manages providers, applies fallback, tracks usage, and enforces budget controls.  
-* The Containerized Local Model Endpoint using vLLM provides local model inference.  
+* The User Interface Layer accepts user requests and displays results.
+* The OpenHands Container provides a browser-based agent workspace and may act as a user-facing development environment.
+* The Containerized LangChain Agent Middleware Layer owns the custom aMMare agent loop, tool execution, response validation, state management, retries, and observations.
+* The Containerized Headroom Proxy Layer optimizes context and reduces token usage as an inline proxy.
+* The Containerized LiteLLM Proxy Layer routes model traffic, manages providers, applies fallback, tracks usage, and enforces budget controls.
+* The Containerized Local Model Endpoint using vLLM provides local model inference.
 * The Frontier Model Cloud API provides high-capability reasoning, validation, and fallback through an external provider.
 
 This separation of responsibilities is essential to the aMMare design. It ensures that each service has a clear purpose and prevents confusion between interface, orchestration, context optimization, routing, inference, and tool execution.
@@ -780,9 +778,9 @@ The model may suggest an action, but the middleware decides whether that action 
 
 This creates a clear separation of responsibility:
 
-* The model performs reasoning and produces intent.  
-* The middleware validates and constrains that intent.  
-* Approved tools perform the actual action.  
+* The model performs reasoning and produces intent.
+* The middleware validates and constrains that intent.
+* Approved tools perform the actual action.
 * Results are captured and returned to the model as bounded context.
 
 This prevents the model from becoming an unrestricted shell, file editor, or automation engine.
@@ -793,16 +791,16 @@ The tool execution boundary is enforced inside the Containerized LangChain Agent
 
 This boundary controls access to approved capabilities such as:
 
-* Reading project files.  
-* Writing or modifying approved files.  
-* Running limited shell commands.  
-* Running tests or validation scripts.  
-* Inspecting logs.  
-* Checking Git status.  
-* Generating diffs.  
-* Preparing commits.  
-* Querying approved local services.  
-* Calling approved APIs.  
+* Reading project files.
+* Writing or modifying approved files.
+* Running limited shell commands.
+* Running tests or validation scripts.
+* Inspecting logs.
+* Checking Git status.
+* Generating diffs.
+* Preparing commits.
+* Querying approved local services.
+* Calling approved APIs.
 * Interacting with approved model endpoints.
 
 The model does not execute these operations directly. Instead, it emits a structured request, and the middleware determines whether the request is valid.
@@ -817,28 +815,28 @@ The registry defines which tools are available to the agentic workflow and what 
 
 Examples of registered tools may include:
 
-* File read tool.  
-* File write tool.  
-* Patch application tool.  
-* Shell command tool.  
-* Test runner tool.  
-* Git status tool.  
-* Git diff tool.  
-* Git commit preparation tool.  
-* Log inspection tool.  
-* Configuration validation tool.  
-* Local API request tool.  
+* File read tool.
+* File write tool.
+* Patch application tool.
+* Shell command tool.
+* Test runner tool.
+* Git status tool.
+* Git diff tool.
+* Git commit preparation tool.
+* Log inspection tool.
+* Configuration validation tool.
+* Local API request tool.
 * Model endpoint request tool.
 
 Each tool should define:
 
-* Its allowed input format.  
-* Its allowed execution scope.  
-* Its permitted working directories.  
-* Whether it can modify state.  
-* Whether it requires human approval.  
-* What output is returned to the model.  
-* What output is written to logs.  
+* Its allowed input format.
+* Its allowed execution scope.
+* Its permitted working directories.
+* Whether it can modify state.
+* Whether it requires human approval.
+* What output is returned to the model.
+* What output is written to logs.
 * What failure conditions must stop the workflow.
 
 This registry prevents tool access from being implied or open-ended.
@@ -853,15 +851,15 @@ The middleware should not assume that a command, path, API call, or file operati
 
 Examples of rejected actions may include:
 
-* Commands outside the approved command allowlist.  
-* File writes outside the approved project workspace.  
-* Attempts to read secrets, tokens, SSH keys, or credential files.  
-* Attempts to access host-level system paths.  
-* Attempts to modify container runtime configuration without approval.  
-* Attempts to execute network calls to unapproved destinations.  
-* Attempts to install packages without approval.  
-* Attempts to delete files without approval.  
-* Attempts to rewrite Git history.  
+* Commands outside the approved command allowlist.
+* File writes outside the approved project workspace.
+* Attempts to read secrets, tokens, SSH keys, or credential files.
+* Attempts to access host-level system paths.
+* Attempts to modify container runtime configuration without approval.
+* Attempts to execute network calls to unapproved destinations.
+* Attempts to install packages without approval.
+* Attempts to delete files without approval.
+* Attempts to rewrite Git history.
 * Attempts to modify production infrastructure directly.
 
 This approach allows the system to support useful automation without granting unrestricted local authority.
@@ -874,17 +872,17 @@ Human approval gates should be used for any action that is destructive, security
 
 Examples of actions that should require approval include:
 
-* Deleting files.  
-* Overwriting existing configuration files.  
-* Installing packages.  
-* Changing firewall rules.  
-* Modifying container runtime settings.  
-* Restarting services.  
-* Applying infrastructure changes.  
-* Sending outbound messages or API requests.  
-* Creating Git commits.  
-* Pushing to a remote repository.  
-* Running commands with elevated privileges.  
+* Deleting files.
+* Overwriting existing configuration files.
+* Installing packages.
+* Changing firewall rules.
+* Modifying container runtime settings.
+* Restarting services.
+* Applying infrastructure changes.
+* Sending outbound messages or API requests.
+* Creating Git commits.
+* Pushing to a remote repository.
+* Running commands with elevated privileges.
 * Accessing sensitive logs or restricted files.
 
 The middleware should pause the workflow and present the proposed action in a clear, reviewable format. The user can then approve, reject, or modify the action.
@@ -901,12 +899,12 @@ This helps prevent premature edits and reduces the risk of the model making inco
 
 A typical safe workflow should follow this pattern:
 
-* Inspect relevant files and current state.  
-* Summarize findings.  
-* Propose a plan.  
-* Request approval for state-changing actions.  
-* Apply approved changes.  
-* Validate the result.  
+* Inspect relevant files and current state.
+* Summarize findings.
+* Propose a plan.
+* Request approval for state-changing actions.
+* Apply approved changes.
+* Validate the result.
 * Report what changed and what remains.
 
 This pattern is especially important when working with deployment scripts, container definitions, CI workflows, security settings, and infrastructure automation.
@@ -919,16 +917,16 @@ The shell command tool should not provide unrestricted terminal access. Instead,
 
 Controls may include:
 
-* Command allowlists.  
-* Argument validation.  
-* Working directory restrictions.  
-* Timeout limits.  
-* Output size limits.  
-* Environment variable filtering.  
-* Network access restrictions.  
-* Privilege restrictions.  
-* Denial of shell chaining where appropriate.  
-* Denial of interactive commands.  
+* Command allowlists.
+* Argument validation.
+* Working directory restrictions.
+* Timeout limits.
+* Output size limits.
+* Environment variable filtering.
+* Network access restrictions.
+* Privilege restrictions.
+* Denial of shell chaining where appropriate.
+* Denial of interactive commands.
 * Denial of commands that require unrestricted TTY access.
 
 The middleware should treat shell access as one of the highest-risk tools in the platform.
@@ -945,16 +943,16 @@ The model should not be able to freely read from the host filesystem.
 
 Restricted paths should include:
 
-* SSH keys.  
-* API tokens.  
-* Shell history.  
-* Browser profiles.  
-* Password stores.  
-* System credential files.  
-* Host runtime sockets.  
-* Private keys.  
-* Cloud provider credential files.  
-* Unrelated user directories.  
+* SSH keys.
+* API tokens.
+* Shell history.
+* Browser profiles.
+* Password stores.
+* System credential files.
+* Host runtime sockets.
+* Private keys.
+* Cloud provider credential files.
+* Unrelated user directories.
 * Sensitive operating system paths.
 
 Write access should be more restrictive than read access. A file may be safe to inspect but unsafe to modify.
@@ -969,12 +967,12 @@ Secrets may be required by the middleware or tools to interact with approved ser
 
 Secret handling should follow these principles:
 
-* Do not place raw secrets in prompts.  
-* Do not return raw secrets in tool output.  
-* Redact known credential patterns from logs.  
-* Restrict access to secret files.  
-* Use environment variables or mounted secrets only where required.  
-* Avoid storing secrets in generated artifacts.  
+* Do not place raw secrets in prompts.
+* Do not return raw secrets in tool output.
+* Redact known credential patterns from logs.
+* Restrict access to secret files.
+* Use environment variables or mounted secrets only where required.
+* Avoid storing secrets in generated artifacts.
 * Block attempts to print, summarize, transform, or exfiltrate secrets.
 
 If a tool requires a credential, the tool should use that credential internally and return only the result required for the workflow.
@@ -989,12 +987,12 @@ Unrestricted outbound network access should be avoided.
 
 Network policy should account for:
 
-* Approved destinations.  
-* Approved ports.  
-* Approved protocols.  
-* Whether authentication is required.  
-* Whether requests are read-only or state-changing.  
-* Whether external calls require approval.  
+* Approved destinations.
+* Approved ports.
+* Approved protocols.
+* Whether authentication is required.
+* Whether requests are read-only or state-changing.
+* Whether external calls require approval.
 * Whether the response can be returned to the model.
 
 This is important because network access can become an exfiltration path, a command-and-control path, or an unintended production-impact path.
@@ -1007,13 +1005,13 @@ The model only needs the information required to continue the task. It does not 
 
 Filtering may include:
 
-* Truncating excessive output.  
-* Removing secrets.  
-* Removing irrelevant environment variables.  
-* Summarizing long logs.  
-* Returning only matching lines from large files.  
-* Redacting tokens, keys, and passwords.  
-* Blocking binary output.  
+* Truncating excessive output.
+* Removing secrets.
+* Removing irrelevant environment variables.
+* Summarizing long logs.
+* Returning only matching lines from large files.
+* Redacting tokens, keys, and passwords.
+* Blocking binary output.
 * Separating user-visible output from internal diagnostic output.
 
 This reduces context noise and helps prevent sensitive information from being pulled into the model session.
@@ -1026,18 +1024,18 @@ Audit logs should record what the model requested, what the middleware allowed o
 
 Audit logging should include:
 
-* Request timestamp.  
-* Session identifier.  
-* Tool name.  
-* Requested action.  
-* Approved or rejected status.  
-* Approval source, if applicable.  
-* Working directory.  
-* Command or operation summary.  
-* Exit code or result status.  
-* Error message, if applicable.  
-* Redacted output summary.  
-* File paths affected.  
+* Request timestamp.
+* Session identifier.
+* Tool name.
+* Requested action.
+* Approved or rejected status.
+* Approval source, if applicable.
+* Working directory.
+* Command or operation summary.
+* Exit code or result status.
+* Error message, if applicable.
+* Redacted output summary.
+* File paths affected.
 * Diff summary for file modifications.
 
 Audit logs should not store raw secrets.
@@ -1052,16 +1050,16 @@ The middleware should capture failures and return structured results to the mode
 
 Failures may include:
 
-* Invalid tool input.  
-* Policy rejection.  
-* Command timeout.  
-* Non-zero command exit.  
-* Permission failure.  
-* Missing file.  
-* Failed validation.  
-* Failed test run.  
-* API error.  
-* Network timeout.  
+* Invalid tool input.
+* Policy rejection.
+* Command timeout.
+* Non-zero command exit.
+* Permission failure.
+* Missing file.
+* Failed validation.
+* Failed test run.
+* API error.
+* Network timeout.
 * Unsafe output detection.
 
 For repeated failures, the middleware should be able to stop the workflow and ask for human direction.
@@ -1076,17 +1074,17 @@ After modifying files, applying a patch, updating configuration, or preparing a 
 
 Validation may include:
 
-* Syntax checks.  
-* Unit tests.  
-* Linting.  
-* ShellCheck.  
-* YAML validation.  
-* JSON validation.  
-* Markdown validation.  
-* Container Quadlet validation.  
-* Dry-run deployment commands.  
-* Git diff review.  
-* Security scanning.  
+* Syntax checks.
+* Unit tests.
+* Linting.
+* ShellCheck.
+* YAML validation.
+* JSON validation.
+* Markdown validation.
+* Container Quadlet validation.
+* Dry-run deployment commands.
+* Git diff review.
+* Security scanning.
 * Project-specific health checks.
 
 The validation result should be returned to the model and included in the final task summary.
@@ -1097,19 +1095,19 @@ If validation fails, the model may propose a corrective change, but the correcti
 
 Git operations should be handled carefully.
 
-The middleware may allow the model to inspect Git status, review diffs, and prepare commit messages. However, committing, tagging, pushing, rebasing, resetting, or altering history should require explicit user approval, If a user requests git commit, or git push actions, the user should be prompted to allow such actions. 
+The middleware may allow the model to inspect Git status, review diffs, and prepare commit messages. However, committing, tagging, pushing, rebasing, resetting, or altering history should require explicit user approval, If a user requests git commit, or git push actions, the user should be prompted to allow such actions.
 
 A safe Git workflow should include:
 
-* Inspect current branch.  
-* Inspect working tree state.  
-* Review changed files.  
-* Generate a diff.  
-* Summarize intended changes.  
-* Run validation.  
-* Run pre-commit  
-* Prepare a commit message.  
-* Request approval before committing.  
+* Inspect current branch.
+* Inspect working tree state.
+* Review changed files.
+* Generate a diff.
+* Summarize intended changes.
+* Run validation.
+* Run pre-commit
+* Prepare a commit message.
+* Request approval before committing.
 * Request approval again before pushing.
 
 This ensures that the user remains in control of repository history and remote publication.
@@ -1120,20 +1118,20 @@ The middleware and tool execution services should run inside containers.
 
 Container isolation provides an additional boundary between the agentic workflow and the host system. The container should receive only the mounts, environment variables, network access, and permissions required for the task.
 
-The container should avoid unnecessary privileges, and be configured to start up in the proper order upon system reboot. 
+The container should avoid unnecessary privileges, and be configured to start up in the proper order upon system reboot.
 
 Recommended controls include:
 
-* Non-root container users where possible.  
-* Read-only mounts where practical.  
-* Narrow bind mounts.  
-* No host root filesystem mount.  
-* No unrestricted container socket access.  
-* Limited Linux capabilities.  
-* SELinux enforcement where applicable.  
-* Resource limits for CPU and memory.  
-* Network segmentation.  
-* Explicit volume definitions.  
+* Non-root container users where possible.
+* Read-only mounts where practical.
+* Narrow bind mounts.
+* No host root filesystem mount.
+* No unrestricted container socket access.
+* Limited Linux capabilities.
+* SELinux enforcement where applicable.
+* Resource limits for CPU and memory.
+* Network segmentation.
+* Explicit volume definitions.
 * Controlled access to model endpoints and local APIs.
 
 Container isolation is not a complete security boundary by itself, but it reduces the blast radius of tool execution.
@@ -1156,18 +1154,18 @@ The model prompt may describe expected behavior, but enforcement must happen in 
 
 Policy configuration may define:
 
-* Allowed tools.  
-* Allowed paths.  
-* Allowed commands.  
-* Denied commands.  
-* Approved network destinations.  
-* Human approval requirements.  
-* Maximum output size.  
-* Maximum runtime.  
-* File write restrictions.  
-* Secret redaction rules.  
-* Logging requirements.  
-* Retry limits.  
+* Allowed tools.
+* Allowed paths.
+* Allowed commands.
+* Denied commands.
+* Approved network destinations.
+* Human approval requirements.
+* Maximum output size.
+* Maximum runtime.
+* File write restrictions.
+* Secret redaction rules.
+* Logging requirements.
+* Retry limits.
 * Environment-specific restrictions.
 
 This allows different deployments of aMMare to use different safety profiles.
@@ -1180,11 +1178,11 @@ The platform may support multiple safety profile modes.
 
 Example modes include:
 
-* Read-only mode.  
-* Local development mode.  
-* Assisted edit mode.  
-* Approved execution mode.  
-* Restricted infrastructure mode.  
+* Read-only mode.
+* Local development mode.
+* Assisted edit mode.
+* Approved execution mode.
+* Restricted infrastructure mode.
 * Enterprise controlled mode.
 
 Each mode can expose a different set of tools and approval requirements.
@@ -1199,13 +1197,13 @@ At the end of a workflow, the middleware should require the model to produce a c
 
 The final response should identify:
 
-* What was inspected.  
-* What was changed.  
-* What was not changed.  
-* What validation was performed.  
-* Whether validation passed or failed.  
-* What risks or limitations remain.  
-* Whether human follow-up is required.  
+* What was inspected.
+* What was changed.
+* What was not changed.
+* What validation was performed.
+* Whether validation passed or failed.
+* What risks or limitations remain.
+* Whether human follow-up is required.
 * Where relevant diffs, logs, or artifacts can be reviewed.
 
 This ensures that the user receives an operationally useful result rather than a vague statement that the task is complete.
@@ -1232,16 +1230,16 @@ The goal of model routing is to match each task to the most appropriate model ti
 
 The router should consider:
 
-* Task complexity.  
-* Required reasoning depth.  
-* Required context length.  
-* Need for tool execution.  
-* Need for code understanding.  
-* Need for structured output.  
-* Sensitivity of the data.  
-* Latency requirements.  
-* Cost constraints.  
-* Confidence level of the first response.  
+* Task complexity.
+* Required reasoning depth.
+* Required context length.
+* Need for tool execution.
+* Need for code understanding.
+* Need for structured output.
+* Sensitivity of the data.
+* Latency requirements.
+* Cost constraints.
+* Confidence level of the first response.
 * Whether the task affects system state.
 
 This prevents the platform from overusing expensive or remote models while also avoiding weak responses for tasks that require stronger reasoning.
@@ -1252,29 +1250,29 @@ The aMMare architecture assumes that different models have different roles.
 
 A smaller local model may be well suited for:
 
-* Simple classification.  
-* Intent detection.  
-* Request summarization.  
-* Basic question answering.  
-* Lightweight code explanation.  
-* Log summarization.  
-* Routing decisions.  
-* Drafting simple responses.  
-* Extracting structured fields.  
+* Simple classification.
+* Intent detection.
+* Request summarization.
+* Basic question answering.
+* Lightweight code explanation.
+* Log summarization.
+* Routing decisions.
+* Drafting simple responses.
+* Extracting structured fields.
 * Running repetitive support tasks.
 
 A larger or remote model may be better suited for:
 
-* Complex reasoning.  
-* Architecture planning.  
-* Multi-step troubleshooting.  
-* Code generation.  
-* Security analysis.  
-* Ambiguous requests.  
-* Cross-file repository understanding.  
-* Explaining failures.  
-* Generating implementation plans.  
-* Reviewing diffs.  
+* Complex reasoning.
+* Architecture planning.
+* Multi-step troubleshooting.
+* Code generation.
+* Security analysis.
+* Ambiguous requests.
+* Cross-file repository understanding.
+* Explaining failures.
+* Generating implementation plans.
+* Reviewing diffs.
 * Producing final user-facing summaries.
 
 This approach allows the platform to use each model where it is strongest.
@@ -1289,14 +1287,14 @@ The router should evaluate the request before execution begins.
 
 Example routing inputs include:
 
-* User prompt.  
-* Session context.  
-* Available tools.  
-* Requested operation.  
-* Workspace metadata.  
-* Data sensitivity.  
-* Current safety profile.  
-* Prior model response quality.  
+* User prompt.
+* Session context.
+* Available tools.
+* Requested operation.
+* Workspace metadata.
+* Data sensitivity.
+* Current safety profile.
+* Prior model response quality.
 * Tool results from earlier workflow steps.
 
 The router should return a structured routing decision rather than relying on informal prompt behavior alone.
@@ -1307,14 +1305,14 @@ The platform may define model tiers rather than binding the architecture to spec
 
 Example tiers include:
 
-* Local lightweight model.  
-* Local coding model.  
-* Local reasoning model.  
-* Remote general-purpose model.  
-* Remote high-reasoning model.  
-* Specialized embedding model.  
-* Specialized reranking model.  
-* Specialized vision model.  
+* Local lightweight model.
+* Local coding model.
+* Local reasoning model.
+* Remote general-purpose model.
+* Remote high-reasoning model.
+* Specialized embedding model.
+* Specialized reranking model.
+* Specialized vision model.
 * Specialized speech or transcription model.
 
 The actual model assigned to each tier can change over time as models improve or deployment constraints change.
@@ -1327,11 +1325,11 @@ The default routing strategy should prefer local models when they are sufficient
 
 Local-first routing provides several advantages:
 
-* Lower operating cost.  
-* Lower latency for small tasks (ideally, target system spec dependent)  
-* Reduced dependency on external services.  
-* Better control over local data.  
-* Better offline or degraded-mode behavior.  
+* Lower operating cost.
+* Lower latency for small tasks (ideally, target system spec dependent)
+* Reduced dependency on external services.
+* Better control over local data.
+* Better offline or degraded-mode behavior.
 * More predictable infrastructure behavior in a lab environment.
 
 However, local-first does not mean local-only.
@@ -1344,19 +1342,19 @@ Escalation should occur when the platform detects that the current model tier is
 
 Escalation triggers may include:
 
-* Low model confidence.  
-* Repeated failed tool calls.  
-* Failed validation.  
-* Ambiguous user intent.  
-* Complex multi-step reasoning.  
-* Cross-file code analysis.  
-* Security-sensitive changes.  
-* Infrastructure-impacting changes.  
-* User-visible production changes.  
-* Requests involving unfamiliar frameworks.  
-* Large context requirements.  
-* Need for stronger code review.  
-* Need for policy interpretation.  
+* Low model confidence.
+* Repeated failed tool calls.
+* Failed validation.
+* Ambiguous user intent.
+* Complex multi-step reasoning.
+* Cross-file code analysis.
+* Security-sensitive changes.
+* Infrastructure-impacting changes.
+* User-visible production changes.
+* Requests involving unfamiliar frameworks.
+* Large context requirements.
+* Need for stronger code review.
+* Need for policy interpretation.
 * Need for final answer verification.
 
 Escalation may also be requested by the model itself, but the middleware should decide whether escalation is allowed.
@@ -1369,14 +1367,14 @@ The router should support confidence-based escalation.
 
 A model response may be considered low confidence when it contains:
 
-* Uncertainty about the requested task.  
-* Incomplete reasoning.  
-* Contradictory claims.  
-* Unsupported assumptions.  
-* Invalid tool requests.  
-* Repeated corrections.  
-* Failed tests.  
-* Output that does not match the requested schema.  
+* Uncertainty about the requested task.
+* Incomplete reasoning.
+* Contradictory claims.
+* Unsupported assumptions.
+* Invalid tool requests.
+* Repeated corrections.
+* Failed tests.
+* Output that does not match the requested schema.
 * A result that conflicts with observed tool output.
 
 When confidence is low, the middleware may reroute the task to a stronger model or request human clarification.
@@ -1403,11 +1401,11 @@ For example, the initial request may be simple enough for a local lightweight mo
 
 Examples include:
 
-* A simple error message expands into a multi-service troubleshooting workflow.  
-* A file edit requires understanding multiple related configuration files.  
-* A failed test reveals a deeper logic problem.  
-* A deployment script change affects container runtime behavior.  
-* A log summary reveals security-sensitive findings.  
+* A simple error message expands into a multi-service troubleshooting workflow.
+* A file edit requires understanding multiple related configuration files.
+* A failed test reveals a deeper logic problem.
+* A deployment script change affects container runtime behavior.
+* A log summary reveals security-sensitive findings.
 * A documentation update becomes an architecture design task.
 
 Routing should therefore be available throughout the workflow, not only at the first prompt.
@@ -1418,21 +1416,21 @@ The router should classify tasks before selecting a model.
 
 Possible task classes include:
 
-* General question.  
-* Documentation generation.  
-* Code explanation.  
-* Code generation/modification.  
-* Test generation.  
-* Test execution.  
-* Script execution and output analysis  
-* Log analysis.  
-* Configuration review.  
-* Infrastructure planning.  
-* Security review.  
-* Repository maintenance.  
-* Troubleshooting.  
-* Data extraction.  
-* Summarization.  
+* General question.
+* Documentation generation.
+* Code explanation.
+* Code generation/modification.
+* Test generation.
+* Test execution.
+* Script execution and output analysis
+* Log analysis.
+* Configuration review.
+* Infrastructure planning.
+* Security review.
+* Repository maintenance.
+* Troubleshooting.
+* Data extraction.
+* Summarization.
 * Final response generation.
 
 Each task class can map to a preferred model tier, tool profile, and escalation rule.
@@ -1447,25 +1445,25 @@ Higher-risk tasks should be routed to stronger models and stricter safety profil
 
 Examples of higher-risk tasks include:
 
-* Security configuration changes.  
-* Authentication or authorization changes.  
-* Firewall changes.  
-* Container runtime changes.  
-* CI/CD pipeline changes.  
-* Infrastructure automation changes.  
-* Data deletion.  
-* Git history modification.  
-* External API calls.  
+* Security configuration changes.
+* Authentication or authorization changes.
+* Firewall changes.
+* Container runtime changes.
+* CI/CD pipeline changes.
+* Infrastructure automation changes.
+* Data deletion.
+* Git history modification.
+* External API calls.
 * Production or shared-environment changes.
 
 For high-risk tasks, the platform may require:
 
-* Stronger model tier.  
-* Human approval.  
-* Read-only inspection before modification.  
-* Validation before final response.  
-* Diff review.  
-* Audit logging.  
+* Stronger model tier.
+* Human approval.
+* Read-only inspection before modification.
+* Validation before final response.
+* Diff review.
+* Audit logging.
 * Explicit rollback notes.
 
 This ensures that routing decisions account for consequences, not only prompt complexity.
@@ -1478,14 +1476,14 @@ The platform should avoid sending every request to the largest available model. 
 
 Cost and latency controls may include:
 
-* Local-first defaults.  
-* Token budget limits.  
-* Maximum context size per model tier.  
-* Escalation only after observable need.  
-* Use of summarization before escalation.  
-* Use of embeddings and retrieval to reduce context size.  
-* Caching for repeated queries.  
-* Model selection based on expected output size.  
+* Local-first defaults.
+* Token budget limits.
+* Maximum context size per model tier.
+* Escalation only after observable need.
+* Use of summarization before escalation.
+* Use of embeddings and retrieval to reduce context size.
+* Caching for repeated queries.
+* Model selection based on expected output size.
 * Timeouts for slow model responses.
 
 The purpose is not to minimize cost at all times. The purpose is to spend cost where it improves correctness, safety, or user value.
@@ -1498,17 +1496,17 @@ The stronger model should receive the information needed to continue the task wi
 
 The context package may include:
 
-* Original user request.  
-* Current task classification.  
-* Current workflow state.  
-* Relevant file excerpts.  
-* Tool results.  
-* Error messages.  
-* Failed validation output.  
-* Current plan.  
-* Prior model response.  
-* Safety constraints.  
-* Required output format.  
+* Original user request.
+* Current task classification.
+* Current workflow state.
+* Relevant file excerpts.
+* Tool results.
+* Error messages.
+* Failed validation output.
+* Current plan.
+* Prior model response.
+* Safety constraints.
+* Required output format.
 * Open questions or unresolved risks.
 
 This keeps escalation efficient and reduces the chance of leaking irrelevant or sensitive information.
@@ -1521,11 +1519,11 @@ After a complex issue has been resolved or a plan has been produced by a stronge
 
 Examples of de-escalation include:
 
-* Formatting a final summary.  
-* Updating simple documentation.  
-* Running a known validation command.  
-* Extracting fields from tool output.  
-* Summarizing a completed diff.  
+* Formatting a final summary.
+* Updating simple documentation.
+* Running a known validation command.
+* Extracting fields from tool output.
+* Summarizing a completed diff.
 * Producing a short user-facing status update.
 
 De-escalation helps preserve resources while keeping high-reasoning models focused on the parts of the workflow where they are most useful.
@@ -1536,12 +1534,12 @@ For certain workflows, aMMare may use more than one model to review the same out
 
 Multi-model review may be useful for:
 
-* Security-sensitive changes.  
-* Large code modifications.  
-* Architecture documents.  
-* Complex troubleshooting plans.  
-* Generated deployment scripts.  
-* Policy-sensitive recommendations.  
+* Security-sensitive changes.
+* Large code modifications.
+* Architecture documents.
+* Complex troubleshooting plans.
+* Generated deployment scripts.
+* Policy-sensitive recommendations.
 * Final review before commit or push.
 
 One model may generate a plan or patch, while another model reviews it for correctness, safety, completeness, and policy alignment.
@@ -1554,23 +1552,23 @@ The routing layer should define fallback behavior when a model is unavailable.
 
 Fallback conditions may include:
 
-* Local model endpoint unavailable.  
-* Remote API unavailable.  
-* Model timeout.  
-* Rate limit.  
-* Authentication failure.  
-* Context window exceeded.  
-* Unsupported input type.  
+* Local model endpoint unavailable.
+* Remote API unavailable.
+* Model timeout.
+* Rate limit.
+* Authentication failure.
+* Context window exceeded.
+* Unsupported input type.
 * Tool compatibility issue.
 
 Fallback options may include:
 
-* Retry the same model.  
-* Route to another local model.  
-* Route to a remote model.  
-* Reduce context size and retry.  
-* Switch to read-only mode.  
-* Stop and ask for human direction.  
+* Retry the same model.
+* Route to another local model.
+* Route to a remote model.
+* Reduce context size and retry.
+* Switch to read-only mode.
+* Stop and ask for human direction.
 * Return a partial result with a clear limitation.
 
 Fallback behavior should be predictable and logged.
@@ -1581,18 +1579,18 @@ Every routing decision should be logged.
 
 Routing logs should capture:
 
-* Timestamp.  
-* Session identifier.  
-* Task classification.  
-* Selected model tier.  
-* Selected model endpoint.  
-* Reason for selection.  
-* Escalation trigger, if applicable.  
-* De-escalation trigger, if applicable.  
-* Safety profile.  
-* Tool profile.  
-* Token estimate.  
-* Latency result.  
+* Timestamp.
+* Session identifier.
+* Task classification.
+* Selected model tier.
+* Selected model endpoint.
+* Reason for selection.
+* Escalation trigger, if applicable.
+* De-escalation trigger, if applicable.
+* Safety profile.
+* Tool profile.
+* Token estimate.
+* Latency result.
 * Failure or fallback behavior.
 
 These logs help tune the router over time and explain why a specific model was used for a specific task.
@@ -1603,14 +1601,14 @@ Routing should be controlled by policy, not only by prompt instructions.
 
 A routing policy may define:
 
-* Which models are available.  
-* Which model tiers are allowed for each task class.  
-* Which data types may be sent to remote models.  
-* Which models may participate in tool workflows.  
-* Which tasks require escalation.  
-* Which tasks require human approval.  
-* Which tasks must remain local.  
-* Which fallback paths are allowed.  
+* Which models are available.
+* Which model tiers are allowed for each task class.
+* Which data types may be sent to remote models.
+* Which models may participate in tool workflows.
+* Which tasks require escalation.
+* Which tasks require human approval.
+* Which tasks must remain local.
+* Which fallback paths are allowed.
 * Which logging fields are required.
 
 This makes routing behavior consistent, auditable, and adjustable without rewriting the whole application.
@@ -1619,16 +1617,16 @@ This makes routing behavior consistent, auditable, and adjustable without rewrit
 
 A typical routing flow may work as follows:
 
-* The user submits a request.  
-* The middleware classifies the task.  
-* The router selects an initial model tier.  
-* The selected model produces a response, plan, or tool request.  
-* The middleware validates any requested tool action.  
-* Tool results are returned to the model.  
-* The middleware evaluates confidence, validation results, and risk.  
-* If needed, the task escalates to a stronger model.  
-* If the task becomes routine, it de-escalates to a smaller model.  
-* The final response is generated.  
+* The user submits a request.
+* The middleware classifies the task.
+* The router selects an initial model tier.
+* The selected model produces a response, plan, or tool request.
+* The middleware validates any requested tool action.
+* Tool results are returned to the model.
+* The middleware evaluates confidence, validation results, and risk.
+* If needed, the task escalates to a stronger model.
+* If the task becomes routine, it de-escalates to a smaller model.
+* The final response is generated.
 * Routing and tool activity are logged.
 
 This flow allows aMMare to adapt during the task instead of making a single static model choice at the beginning.
@@ -1655,16 +1653,16 @@ The coding agent should not attempt to build the entire platform in one pass.
 
 The development process should follow these principles:
 
-* Build one layer at a time.  
-* Validate each layer before adding the next one.  
-* Avoid hardcoding service relationships that will change later.  
-* Use stable logical endpoint names from the beginning.  
-* Keep each component independently deployable where practical.  
-* Keep deployment scripts idempotent.  
-* Keep configuration externalized.  
-* Document every component as it is added.  
-* Add troubleshooting scripts alongside each service.  
-* Prefer simple working behavior before advanced routing behavior.  
+* Build one layer at a time.
+* Validate each layer before adding the next one.
+* Avoid hardcoding service relationships that will change later.
+* Use stable logical endpoint names from the beginning.
+* Keep each component independently deployable where practical.
+* Keep deployment scripts idempotent.
+* Keep configuration externalized.
+* Document every component as it is added.
+* Add troubleshooting scripts alongside each service.
+* Prefer simple working behavior before advanced routing behavior.
 * Avoid introducing memory, retrieval, or multi-agent behavior until the core model path is stable.
 
 The goal is not only to reach the final architecture. The goal is to create a system that remains understandable and maintainable while it grows.
@@ -1677,33 +1675,33 @@ This phase should not focus on model behavior yet. It should focus on making sur
 
 Required outcomes:
 
-* Create the base repository structure.  
-* Create top-level **README.md.**  
-* Create **docs**/ directory.  
-* Create **scripts**/ directory.  
-* Create **config**/ directory.  
-* Create **env**/ directory for environment examples.  
-* Create **containers/ directory** for service definitions.  
-* Create **tests**/ directory.  
-* Add baseline linting and formatting standards (pre-commit, rules.md)  
-* Add shell script style expectations.   
-* Add example environment files.  
-* Add basic preflight validation script.  
-* Add basic project health script.  
-* Add placeholder documentation for future components.  
-* Add .gitignore and ensure all \*.env files, which configure IPs or contain secrets, are ignored by git; only the \*.env.example templates are committed  
-* Any \<component\>.env file created should have a corresponding \<component\>.env.example template that is included in the repo and is updated with any and all parameters that the end user will need to include in the \<component\>.env file  
+* Create the base repository structure.
+* Create top-level **README.md.**
+* Create **docs**/ directory.
+* Create **scripts**/ directory.
+* Create **config**/ directory.
+* Create **env**/ directory for environment examples.
+* Create **containers/ directory** for service definitions.
+* Create **tests**/ directory.
+* Add baseline linting and formatting standards (pre-commit, rules.md)
+* Add shell script style expectations.
+* Add example environment files.
+* Add basic preflight validation script.
+* Add basic project health script.
+* Add placeholder documentation for future components.
+* Add .gitignore and ensure all \*.env files, which configure IPs or contain secrets, are ignored by git; only the \*.env.example templates are committed
+* Any \<component\>.env file created should have a corresponding \<component\>.env.example template that is included in the repo and is updated with any and all parameters that the end user will need to include in the \<component\>.env file
 * All .env files and templates should be well documented with inline comments
 
 The coding agent should avoid implementing advanced logic in this phase, however the coding agent should be aware of the entire architecture and implementation plan. The purpose is to prepare the project so later changes have a consistent location and naming model.
 
 Expected validation:
 
-* Repository structure exists.  
-* Basic scripts run without syntax errors.  
-* Example environment files are present.  
-* Documentation placeholders are present.  
-* No secrets are committed.  
+* Repository structure exists.
+* Basic scripts run without syntax errors.
+* Example environment files are present.
+* Documentation placeholders are present.
+* No secrets are committed.
 * Git status is clean after generated files are reviewed.
 
 ## **Phase One: Local LLM Endpoint** {#phase-one:-local-llm-endpoint}
@@ -1716,21 +1714,21 @@ At this stage, the model endpoint does not need advanced routing. It only needs 
 
 Required outcomes:
 
-* Deploy the local LLM container.  
-* Select Appropriate model for the target environment (POC will have 2x NVIDIA RTX 3060 GPUs with 24 GB of VRAM total across both GPUs)  
-* Define the local model service name.  
-* Define the local model listening port.  
-* Define model storage paths.  
-* Define GPU visibility and runtime requirements.  
-* Define local model environment variables.  
-* Create a local model deployment script.  
-* Create a local model validation script.  
-* Create basic request/response smoke test.  
-* Document how to change the local model.  
-* Document how to view logs.  
-* Document common startup failures.  
-* Ensure that the LLM container starts at boot  
-* Ensure that all documentation related to the operation, endpoints, unit tests, and helper scripts are developed. 
+* Deploy the local LLM container.
+* Select Appropriate model for the target environment (POC will have 2x NVIDIA RTX 3060 GPUs with 24 GB of VRAM total across both GPUs)
+* Define the local model service name.
+* Define the local model listening port.
+* Define model storage paths.
+* Define GPU visibility and runtime requirements.
+* Define local model environment variables.
+* Create a local model deployment script.
+* Create a local model validation script.
+* Create basic request/response smoke test.
+* Document how to change the local model.
+* Document how to view logs.
+* Document common startup failures.
+* Ensure that the LLM container starts at boot
+* Ensure that all documentation related to the operation, endpoints, unit tests, and helper scripts are developed.
 
 The endpoint should be exposed through a configurable logical model gateway variable.
 
@@ -1740,12 +1738,12 @@ An important design requirement is that LangChain must not hardcode a direct dep
 
 Example logical target using a container or internal DNS name:
 
-| AMMARE\_MODEL\_GATEWAY\_URL=http://ammare-litellm:4000 |
+| AMMARE\_MODEL\_GATEWAY\_URL=<http://ammare-litellm:4000> |
 | :---- |
 
 Example logical target using a local lab IP address:
 
-| AMMARE\_MODEL\_GATEWAY\_URL=http://10.1.10.17:4000 |
+| AMMARE\_MODEL\_GATEWAY\_URL=<http://10.1.10.17:4000> |
 | :---- |
 
 In early phases of the POC, this endpoint may point directly to the local LLM service. In later phases, the same variable can be repointed to LiteLLM, Headroom, or another model gateway component.
@@ -1769,12 +1767,12 @@ Without requiring LangChain logic to be rewritten each time the backend service 
 
 Expected validation:
 
-* Local model container starts.  
-* GPU is visible to the container if required.  
-* Model loads successfully.  
-* Healthy endpoint responds.  
-* Basic inference request succeeds.  
-* Logs show no fatal startup errors.  
+* Local model container starts.
+* GPU is visible to the container if required.
+* Model loads successfully.
+* Healthy endpoint responds.
+* Basic inference request succeeds.
+* Logs show no fatal startup errors.
 * Validation script returns success.
 
 ## **Phase Two: LangChain Middleware Layer** {#phase-two:-langchain-middleware-layer}
@@ -1787,28 +1785,28 @@ The first version should prove that LangChain can receive a request, call the lo
 
 Required outcomes:
 
-* Deploy LangChain middleware container.  
-* Define LangChain service name.  
-* Define LangChain listening port.  
-* Configure LangChain to use the logical model gateway URL.  
-* Add a simple request API.  
-* Add basic prompt template handling.  
-* Add basic structured logging.  
-* Add a health endpoint.  
-* Add validation script.  
-* Add documentation for modifying LangChain prompts and rules.  
+* Deploy LangChain middleware container.
+* Define LangChain service name.
+* Define LangChain listening port.
+* Configure LangChain to use the logical model gateway URL.
+* Add a simple request API.
+* Add basic prompt template handling.
+* Add basic structured logging.
+* Add a health endpoint.
+* Add validation script.
+* Add documentation for modifying LangChain prompts and rules.
 * Add documentation for troubleshooting LangChain-to-model communication.
 
 The LangChain service should not be tightly coupled to a specific local model endpoint. It should rely on configuration.
 
 Expected validation:
 
-* LangChain container starts.  
-* LangChain health endpoint responds.  
-* LangChain can reach the configured model endpoint.  
-* Simple prompt request succeeds.  
-* Failed model calls return clear errors.  
-* Logs identify the model endpoint being used.  
+* LangChain container starts.
+* LangChain health endpoint responds.
+* LangChain can reach the configured model endpoint.
+* Simple prompt request succeeds.
+* Failed model calls return clear errors.
+* Logs identify the model endpoint being used.
 * Validation script confirms LangChain-to-model path.
 
 ## **Phase Three: Direct Local Model Workflow Validation** {#phase-three:-direct-local-model-workflow-validation}
@@ -1824,22 +1822,22 @@ The purpose of this phase is to prove the core request path before introducing a
 
 Required outcomes:
 
-* End-to-end request path works.  
-* LangChain can send prompts to the local model.  
-* Responses return to the user or API client.  
-* Basic error handling works.  
-* Service logs are useful for troubleshooting.  
-* Endpoint validation script confirms the full chain.  
-* Documentation describes the current direct service chain.  
+* End-to-end request path works.
+* LangChain can send prompts to the local model.
+* Responses return to the user or API client.
+* Basic error handling works.
+* Service logs are useful for troubleshooting.
+* Endpoint validation script confirms the full chain.
+* Documentation describes the current direct service chain.
 * Known limitations are documented.
 
 Expected validation:
 
-* End-to-end smoke test passes.  
-* Invalid request returns controlled error.  
-* Stopped model endpoint produces clear LangChain error.  
-* Restarted model endpoint recovers without manual reconfiguration.  
-* Logs show request path clearly.  
+* End-to-end smoke test passes.
+* Invalid request returns controlled error.
+* Stopped model endpoint produces clear LangChain error.
+* Restarted model endpoint recovers without manual reconfiguration.
+* Logs show request path clearly.
 * No cloud model or external dependency is required.
 
 This phase establishes the minimum viable aMMare service path.
@@ -1857,27 +1855,27 @@ The service chain becomes:
 
 Required outcomes:
 
-* Deploy LiteLLM container.  
-* Define LiteLLM service name.  
-* Define LiteLLM listening port.  
-* Configure LiteLLM with local model backend.  
-* Repoint LangChain from direct local model access to LiteLLM.  
-* Preserve the same logical model gateway variable where possible.  
-* Add LiteLLM health check.  
-* Add LiteLLM routing validation script.  
-* Add documentation for adding and modifying LiteLLM model backends.  
+* Deploy LiteLLM container.
+* Define LiteLLM service name.
+* Define LiteLLM listening port.
+* Configure LiteLLM with local model backend.
+* Repoint LangChain from direct local model access to LiteLLM.
+* Preserve the same logical model gateway variable where possible.
+* Add LiteLLM health check.
+* Add LiteLLM routing validation script.
+* Add documentation for adding and modifying LiteLLM model backends.
 * Add troubleshooting documentation for LiteLLM-to-model failures.
 
 This phase is important because it prevents LangChain from becoming responsible for every model provider connection directly.
 
 Expected validation:
 
-* LiteLLM container starts.  
-* LiteLLM can reach the local model backend.  
-* LangChain can reach LiteLLM.  
-* End-to-end request succeeds through LiteLLM.  
-* LiteLLM logs show backend routing activity.  
-* Direct local model access can be tested independently.  
+* LiteLLM container starts.
+* LiteLLM can reach the local model backend.
+* LangChain can reach LiteLLM.
+* End-to-end request succeeds through LiteLLM.
+* LiteLLM logs show backend routing activity.
+* Direct local model access can be tested independently.
 * Service chain validation confirms the new path.
 
 ## **Phase Five: Cloud Model Provider Integration** {#phase-five:-cloud-model-provider-integration}
@@ -1888,30 +1886,28 @@ The goal is to prove that the system can route to both a local model and a cloud
 
 Required outcomes:
 
-* Add cloud model provider configuration.  
-* Store cloud provider settings in external configuration.  
-* Store credentials securely outside committed files.  
-* Add model alias for the cloud model.  
-* Add validation script for cloud provider connectivity.  
-* Add documentation for adding additional cloud providers.  
-* Add documentation for required LangChain changes, if any.  
-* Add policy notes for what data may be sent to cloud models.  
+* Add cloud model provider configuration.
+* Store cloud provider settings in external configuration.
+* Store credentials securely outside committed files.
+* Add model alias for the cloud model.
+* Add validation script for cloud provider connectivity.
+* Add documentation for adding additional cloud providers.
+* Add documentation for required LangChain changes, if any.
+* Add policy notes for what data may be sent to cloud models.
 * Add failure behavior for unavailable cloud providers.
 
 Expected validation:
 
-* LiteLLM can reach the local model backend.  
-* LiteLLM can reach frontier cloud model backend.  
-* A request can be routed to the local model.  
-* A request can be routed to the frontier cloud model.  
-* Missing or invalid cloud credentials produce clear errors.  
-* LangChain does not require major code changes to use the new backend.  
+* LiteLLM can reach the local model backend.
+* LiteLLM can reach frontier cloud model backend.
+* A request can be routed to the local model.
+* A request can be routed to the frontier cloud model.
+* Missing or invalid cloud credentials produce clear errors.
+* LangChain does not require major code changes to use the new backend.
 * Documentation explains how to add another provider.
-
 
 | ❗WARNING:  Cloud credentials/APIs are secrets and should never be committed to git and should only exist locally on the target system |
 | :---- |
-
 
 This phase should not yet attempt advanced automated escalation. It should first prove that multiple backends are reachable and selectable.
 
@@ -1919,30 +1915,30 @@ This phase should not yet attempt advanced automated escalation. It should first
 
 This phase implements the model routing and escalation strategy.
 
-The system should begin making controlled routing decisions based on task type, risk level, confidence, context size, and configured policy. Routing should remain observable and explainable, and well documented. 
+The system should begin making controlled routing decisions based on task type, risk level, confidence, context size, and configured policy. Routing should remain observable and explainable, and well documented.
 
 Required outcomes:
 
-* Define routing policy file.  
-* Define model tiers or aliases.  
-* Add task classification logic.  
-* Add local-first routing behavior.  
-* Add escalation triggers.  
-* Add fallback behavior.  
-* Add routing decision logs.  
-* Add routing validation tests.  
-* Add documentation for modifying routing rules.  
+* Define routing policy file.
+* Define model tiers or aliases.
+* Add task classification logic.
+* Add local-first routing behavior.
+* Add escalation triggers.
+* Add fallback behavior.
+* Add routing decision logs.
+* Add routing validation tests.
+* Add documentation for modifying routing rules.
 * Add examples of simple, medium, and escalated requests.
 
 The routing logic should remain configuration-driven where possible. The coding agent should avoid burying routing rules deep inside application code if they are likely to change. Whenever possible, helper-scripts should provide the end user a standardized way to add/modify/delete/validate routing logic. Helper scripts should exist in a service specific script directory under /scripts in the base repo
 
 Expected validation:
 
-* Simple requests route to the local model.  
-* Configured complex requests route to the stronger model.  
-* Failed local model requests can fallback or escalate.  
-* Routing decisions are logged.  
-* Routing policy can be modified without rewriting core code.  
+* Simple requests route to the local model.
+* Configured complex requests route to the stronger model.
+* Failed local model requests can fallback or escalate.
+* Routing decisions are logged.
+* Routing policy can be modified without rewriting core code.
 * Validation scripts show which model handled the request.
 
 ## **Phase Seven: Headroom Integration** {#phase-seven:-headroom-integration}
@@ -1960,26 +1956,26 @@ The exact placement of Headroom should be confirmed during implementation. The a
 
 Required outcomes:
 
-* Define Headroom role in the service chain.  
-* Deploy Headroom container.  
-* Define Headroom service name.  
-* Define Headroom listening port.  
-* Configure upstream and downstream endpoints.  
-* Rewire LangChain or gateway configuration as needed.  
-* Preserve logical endpoint abstraction.  
-* Add Headroom health check.  
-* Add service chain validation through Headroom.  
-* Add troubleshooting documentation.  
+* Define Headroom role in the service chain.
+* Deploy Headroom container.
+* Define Headroom service name.
+* Define Headroom listening port.
+* Configure upstream and downstream endpoints.
+* Rewire LangChain or gateway configuration as needed.
+* Preserve logical endpoint abstraction.
+* Add Headroom health check.
+* Add service chain validation through Headroom.
+* Add troubleshooting documentation.
 * Document how to bypass Headroom for isolation testing.
 
 Expected validation:
 
-* Headroom container starts.  
-* Headroom health endpoint responds.  
-* Headroom can reach LiteLLM.  
-* LangChain can reach Headroom if Headroom is in the request path.  
-* End-to-end request succeeds through the full chain.  
-* The previous LiteLLM path can still be validated independently.  
+* Headroom container starts.
+* Headroom health endpoint responds.
+* Headroom can reach LiteLLM.
+* LangChain can reach Headroom if Headroom is in the request path.
+* End-to-end request succeeds through the full chain.
+* The previous LiteLLM path can still be validated independently.
 * Logs identify where requests are passing or failing.
 
 This phase should be treated as a controlled service-chain rewiring event.
@@ -1992,26 +1988,26 @@ OpenHands should not be introduced until the core model routing path is stable. 
 
 Required outcomes:
 
-* Define OpenHands role in the architecture.  
-* Define whether OpenHands is user-facing, middleware-facing, or task-specific.  
-* Deploy OpenHands container.  
-* Define workspace mount model.  
-* Define access boundaries.  
-* Define allowed repositories or project paths.  
-* Define relationship to LangChain middleware.  
-* Define relationship to model routing layer.  
-* Add OpenHands health check.  
-* Add basic coding-agent workflow validation.  
+* Define OpenHands role in the architecture.
+* Define whether OpenHands is user-facing, middleware-facing, or task-specific.
+* Deploy OpenHands container.
+* Define workspace mount model.
+* Define access boundaries.
+* Define allowed repositories or project paths.
+* Define relationship to LangChain middleware.
+* Define relationship to model routing layer.
+* Add OpenHands health check.
+* Add basic coding-agent workflow validation.
 * Add documentation for safe workspace usage.
 
 Expected validation:
 
-* OpenHands container starts.  
-* Workspace mounts are correct.  
-* OpenHands can reach the intended model endpoint or middleware layer.  
-* OpenHands cannot access unintended host paths.  
-* Basic coding-agent workflow succeeds.  
-* Logs and artifacts are visible for review.  
+* OpenHands container starts.
+* Workspace mounts are correct.
+* OpenHands can reach the intended model endpoint or middleware layer.
+* OpenHands cannot access unintended host paths.
+* Basic coding-agent workflow succeeds.
+* Logs and artifacts are visible for review.
 * Tool execution restrictions are documented.
 
 This phase should remain conservative. OpenHands should not receive broad host access simply because it is useful for coding tasks.
@@ -2024,28 +2020,28 @@ Memory and retrieval should be added after the core routing path is stable. Addi
 
 Required outcomes:
 
-* Define memory scope.  
-* Define what should and should not be stored.  
-* Define vector database or retrieval backend if used.  
-* Define document ingestion path.  
-* Define embedding model.  
-* Define retrieval policy.  
-* Define context injection rules.  
-* Define redaction behavior.  
-* Define reset or purge process.  
-* Add memory validation script.  
-* Add retrieval quality tests.  
-* Add documentation for adding documents to retrieval.  
+* Define memory scope.
+* Define what should and should not be stored.
+* Define vector database or retrieval backend if used.
+* Define document ingestion path.
+* Define embedding model.
+* Define retrieval policy.
+* Define context injection rules.
+* Define redaction behavior.
+* Define reset or purge process.
+* Add memory validation script.
+* Add retrieval quality tests.
+* Add documentation for adding documents to retrieval.
 * Add documentation for troubleshooting bad retrieval results.
 
 Expected validation:
 
-* Memory service starts if applicable.  
-* Documents can be indexed.  
-* Retrieval returns relevant context.  
-* Irrelevant context is not over-injected.  
-* Sensitive content handling is documented.  
-* LangChain can use retrieved context.  
+* Memory service starts if applicable.
+* Documents can be indexed.
+* Retrieval returns relevant context.
+* Irrelevant context is not over-injected.
+* Sensitive content handling is documented.
+* LangChain can use retrieved context.
 * The system still works when retrieval is disabled.
 
 Memory should be optional during initial deployment.
@@ -2063,29 +2059,29 @@ The exact final chain may vary based on which components are enabled.
 
 Required outcomes:
 
-* Add full service-chain validation script.  
-* Add component-by-component validation.  
-* Add dependency validation.  
-* Add configuration validation.  
-* Add model backend validation.  
-* Add routing validation.  
-* Add memory/retrieval validation if enabled.  
-* Add OpenHands validation if enabled.  
-* Add failure-mode tests.  
+* Add full service-chain validation script.
+* Add component-by-component validation.
+* Add dependency validation.
+* Add configuration validation.
+* Add model backend validation.
+* Add routing validation.
+* Add memory/retrieval validation if enabled.
+* Add OpenHands validation if enabled.
+* Add failure-mode tests.
 * Add final deployment summary output.
 
 Expected validation:
 
-* Every enabled container is running.  
-* Every enabled health endpoint responds.  
-* Internal service DNS or hostnames resolve.  
-* Config files are valid.  
-* Required ports are listening.  
-* Required volumes exist.  
-* Model backends respond.  
-* End-to-end prompt succeeds.  
-* Routing behavior matches policy.  
-* Optional components can be disabled cleanly.  
+* Every enabled container is running.
+* Every enabled health endpoint responds.
+* Internal service DNS or hostnames resolve.
+* Config files are valid.
+* Required ports are listening.
+* Required volumes exist.
+* Model backends respond.
+* End-to-end prompt succeeds.
+* Routing behavior matches policy.
+* Optional components can be disabled cleanly.
 * Logs identify the active service path.
 
 This phase should make it easy to determine whether the system is healthy without manually inspecting every container.
@@ -2098,16 +2094,16 @@ The one-click deployment script should orchestrate the component deployment scri
 
 Required outcomes:
 
-* Create top-level deploy script.  
-* Create top-level uninstall script.  
-* Create top-level validation script.  
-* Add component selection flags.  
-* Add deployment profiles.  
-* Add preflight checks.  
-* Add ordered deployment logic.  
-* Add post-deployment validation.  
-* Add deployment summary.  
-* Add failure reporting.  
+* Create top-level deploy script.
+* Create top-level uninstall script.
+* Create top-level validation script.
+* Add component selection flags.
+* Add deployment profiles.
+* Add preflight checks.
+* Add ordered deployment logic.
+* Add post-deployment validation.
+* Add deployment summary.
+* Add failure reporting.
 * Add documentation for deployment profiles.
 
 **Example deployment profiles may include:**
@@ -2119,14 +2115,14 @@ The deployment configuration should allow users to pick which components to depl
 
 Expected validation:
 
-* Minimal deployment works.  
-* Full deployment works.  
-* Optional components can be skipped.  
-* Re-running deployment is safe (idempotent)  
-* Failed deployment reports the failed component.  
-* Validation can be run independently after deployment.  
-* Uninstall behavior is documented and controlled.  
-* The creation of an uninstall script is imperative in order to allow for easy cleanup after a deployment (failed or successful). As we progress through the deployment phases, the uninstall script should allow the environment to be wiped clean in order to test deployment in a new environment minus any remaining deployment artifacts. 
+* Minimal deployment works.
+* Full deployment works.
+* Optional components can be skipped.
+* Re-running deployment is safe (idempotent)
+* Failed deployment reports the failed component.
+* Validation can be run independently after deployment.
+* Uninstall behavior is documented and controlled.
+* The creation of an uninstall script is imperative in order to allow for easy cleanup after a deployment (failed or successful). As we progress through the deployment phases, the uninstall script should allow the environment to be wiped clean in order to test deployment in a new environment minus any remaining deployment artifacts.
 
 The top-level script should preserve modularity.
 
@@ -2138,32 +2134,32 @@ By this point, the system should already work. This phase focuses on making it u
 
 Required outcomes:
 
-* Complete top-level README.md.  
-* Complete component documentation.  
-* Complete deployment documentation.  
-* Complete configuration documentation.  
-* Complete troubleshooting documentation.  
-* Complete validation documentation.  
-* Complete coding-agent implementation guide.  
-* Review security-sensitive defaults.  
-* Review secret handling.  
-* Review container permissions.  
-* Review exposed ports.  
-* Review logging behavior.  
-* Review failure behavior.  
-* Add release checklist.  
-* Add known limitations.  
+* Complete top-level README.md.
+* Complete component documentation.
+* Complete deployment documentation.
+* Complete configuration documentation.
+* Complete troubleshooting documentation.
+* Complete validation documentation.
+* Complete coding-agent implementation guide.
+* Review security-sensitive defaults.
+* Review secret handling.
+* Review container permissions.
+* Review exposed ports.
+* Review logging behavior.
+* Review failure behavior.
+* Add release checklist.
+* Add known limitations.
 * Add deferred features list.
 
 Expected validation:
 
-* A new user can understand the architecture from the README.  
-* A coding agent can follow the implementation guide.  
-* Each component has modification instructions.  
-* Each component has validation instructions.  
-* Troubleshooting scripts are documented.  
-* No secrets are committed.  
-* Default deployment is conservative.  
+* A new user can understand the architecture from the README.
+* A coding agent can follow the implementation guide.
+* Each component has modification instructions.
+* Each component has validation instructions.
+* Troubleshooting scripts are documented.
+* No secrets are committed.
+* Default deployment is conservative.
 * Final service-chain validation passes.
 
 The aMMare development and deployment roadmap is intentionally phased.
@@ -2186,19 +2182,19 @@ The topology described in this section should be treated as the intended end sta
 
 The service topology should follow these principles:
 
-* Each major function should run as a separate containerized service.  
-* Each service should have a predictable name.  
-* Each service should have clearly documented listening ports.  
-* Internal service relationships should be configured through environment variables or config files.  
-* Direct hardcoded service URLs should be avoided inside application code.  
-* Optional services should be disabled cleanly when not deployed.  
-* Each service should have a health check.  
-* Each service should write logs to a predictable location.  
-* Each service should have its own documentation.  
-* The full service chain should be testable end to end.  
-* Each layer should be independently testable for troubleshooting.  
-* Each service should have non-ephemeral storage (when storage is required)  
-* Each service should start automatically on boot  
+* Each major function should run as a separate containerized service.
+* Each service should have a predictable name.
+* Each service should have clearly documented listening ports.
+* Internal service relationships should be configured through environment variables or config files.
+* Direct hardcoded service URLs should be avoided inside application code.
+* Optional services should be disabled cleanly when not deployed.
+* Each service should have a health check.
+* Each service should write logs to a predictable location.
+* Each service should have its own documentation.
+* The full service chain should be testable end to end.
+* Each layer should be independently testable for troubleshooting.
+* Each service should have non-ephemeral storage (when storage is required)
+* Each service should start automatically on boot
 * NOTE: Additional consideration regarding startup order may be required depending on service behavior or dependencies
 
 The topology should support both a minimal local deployment and a more complete multi-service deployment.
@@ -2249,21 +2245,17 @@ For the local lab deployment, static local IP addresses are acceptable. The impo
 
 Example using a local lab IP address:
 
-| AMMARE\_MODEL\_GATEWAY\_URL=http://10.1.10.17:4000 |
+| AMMARE\_MODEL\_GATEWAY\_URL=<http://10.1.10.17:4000> |
 | :---- |
 
 Example using an internal service name:
 
-| AMMARE\_MODEL\_GATEWAY\_URL=http://ammare-litellm:4000 |
+| AMMARE\_MODEL\_GATEWAY\_URL=<http://ammare-litellm:4000> |
 | :---- |
 
 In an early deployment, this endpoint may point directly to the local LLM service. In later deployments, it may point to LiteLLM or Headroom.
 
 This allows the backend service chain to change while preserving the same application-level configuration pattern.
-
-## 
-
-## 
 
 ## **Proposed Service Inventory** {#proposed-service-inventory}
 
@@ -2306,14 +2298,14 @@ Optional services should be enabled through deployment configuration.
 
 Optional components may include:
 
-* LiteLLM.  
-* Headroom.  
-* OpenHands.  
-* Memory backend.  
-* Vector database.  
-* Embedding model.  
-* UI layer.  
-* Additional model providers.  
+* LiteLLM.
+* Headroom.
+* OpenHands.
+* Memory backend.
+* Vector database.
+* Embedding model.
+* UI layer.
+* Additional model providers.
 * Additional management or observability components.
 
 Optional services should not be required for the minimal local deployment.
@@ -2353,22 +2345,22 @@ The following endpoint and port reference table is the authoritative list of ser
 
 | Service | Default Port | Example Endpoint | Network Exposure |
 | :---- | :---- | :---- | :---- |
-| ammare-langchain | 8080 | http://10.1.10.17:8080 | LAN-routable (10.1.10.0/24). Client-facing gateway; IDE/CLI clients connect here (AMMARE\_GATEWAY\_URL). |
-| ammare-local-llm | 8000 | http://ammare-local-llm:8000 | Internal only (host-local or container network). |
-| ammare-litellm | 4000 | http://ammare-litellm:4000 | Internal only (host-local or container network). |
-| ammare-headroom | 4100 | http://ammare-headroom:4100 | Internal only (host-local or container network). |
-| ammare-openhands | TBD | http://ammare-openhands:TBD | Internal only by default; LAN exposure may be added at implementation if browser access from other machines is required. |
-| ammare-vector-db | TBD | http://ammare-vector-db:TBD | Internal only (host-local or container network). |
-| ammare-embedding | TBD | http://ammare-embedding:TBD | Internal only (host-local or container network). |
-| ammare-ui | TBD | http://ammare-ui:TBD | Internal only by default; LAN exposure may be added at implementation if deployed for browser access. |
+| ammare-langchain | 8080 | <http://10.1.10.17:8080> | LAN-routable (10.1.10.0/24). Client-facing gateway; IDE/CLI clients connect here (AMMARE\_GATEWAY\_URL). |
+| ammare-local-llm | 8000 | <http://ammare-local-llm:8000> | Internal only (host-local or container network). |
+| ammare-litellm | 4000 | <http://ammare-litellm:4000> | Internal only (host-local or container network). |
+| ammare-headroom | 4100 | <http://ammare-headroom:4100> | Internal only (host-local or container network). |
+| ammare-openhands | TBD | <http://ammare-openhands:TBD> | Internal only by default; LAN exposure may be added at implementation if browser access from other machines is required. |
+| ammare-vector-db | TBD | <http://ammare-vector-db:TBD> | Internal only (host-local or container network). |
+| ammare-embedding | TBD | <http://ammare-embedding:TBD> | Internal only (host-local or container network). |
+| ammare-ui | TBD | <http://ammare-ui:TBD> | Internal only by default; LAN exposure may be added at implementation if deployed for browser access. |
 
 The topology should distinguish between:
 
-* Container internal ports.  
-* Host-published ports.  
-* Local-only ports.  
-* API ports.  
-* Health-check ports.  
+* Container internal ports.
+* Host-published ports.
+* Local-only ports.
+* API ports.
+* Health-check ports.
 * Optional UI ports.
 
 For local lab deployments, it is acceptable for services to bind to local lab IP addresses. Services that do not need external access should not be published beyond the host or internal container network.
@@ -2383,10 +2375,10 @@ The initial deployment may use a single host with multiple containers. Later dep
 
 Supported network patterns may include:
 
-* Single host with container-internal networking.  
-* Single host with selected host-published ports.  
-* Local lab IP-based service access.  
-* Internal DNS or static hostname mapping.  
+* Single host with container-internal networking.
+* Single host with selected host-published ports.
+* Local lab IP-based service access.
+* Internal DNS or static hostname mapping.
 * Multi-host deployment using static IPs or local DNS.
 
 **The architecture should not assume public internet exposure.**
@@ -2419,7 +2411,7 @@ Recommended environment file paths (git ignored)
 
 Actual environment files above that contain local values or secrets should not be committed, use the environment template files as examples and include them in repo commits
 
-Note: All env files need to be well documented with inline comments explaining the usage of each defined variable. 
+Note: All env files need to be well documented with inline comments explaining the usage of each defined variable.
 
 Environment files are not hidden files. Actual environment files use the plain \<component\>.env naming convention and are excluded from version control through .gitignore, while the corresponding \<component\>.env.example templates are committed to the repository.
 
@@ -2461,7 +2453,7 @@ Two gateway variables are intentionally distinct and must not be conflated: **AM
 
 The coding agent should prefer clear environment variables over hardcoded values.
 
-All variables above should be created with a default value. End users can modify as needed. 
+All variables above should be created with a default value. End users can modify as needed.
 
 ## **Startup Order** {#startup-order}
 
@@ -2478,10 +2470,10 @@ The deployment scripts should validate each dependency before starting dependent
 
 For example:
 
-* LiteLLM should validate that at least one model backend is configured.  
-* Headroom should validate that its upstream endpoint is reachable.  
-* LangChain should validate that its configured model gateway is reachable.  
-* OpenHands should validate that its workspace path exists.  
+* LiteLLM should validate that at least one model backend is configured.
+* Headroom should validate that its upstream endpoint is reachable.
+* LangChain should validate that its configured model gateway is reachable.
+* OpenHands should validate that its workspace path exists.
 * Memory services should validate that the vector database is available.
 
 ## **Independent Troubleshooting Paths** {#independent-troubleshooting-paths}
@@ -2490,14 +2482,14 @@ Each service should be independently testable.
 
 The platform should provide scripts that can validate:
 
-* Local LLM endpoint directly.  
-* LiteLLM to local LLM.  
-* LiteLLM to cloud provider.  
-* Headroom to LiteLLM.  
-* LangChain to configured model gateway.  
-* Full user-to-model service chain.  
-* Memory indexing.  
-* Memory retrieval.  
+* Local LLM endpoint directly.
+* LiteLLM to local LLM.
+* LiteLLM to cloud provider.
+* Headroom to LiteLLM.
+* LangChain to configured model gateway.
+* Full user-to-model service chain.
+* Memory indexing.
+* Memory retrieval.
 * OpenHands workspace behavior.
 
 This is important because the final chain may contain several layers. A failure in the full chain should be isolated quickly to the failing component.
@@ -2510,13 +2502,13 @@ Health checks should be lightweight and should not require a full model generati
 
 Recommended health-check categories:
 
-* Container running.  
-* Port listening.  
-* HTTP health endpoint responding.  
-* Required config file present.  
-* Required upstream reachable.  
-* Required model loaded.  
-* Required volume mounted.  
+* Container running.
+* Port listening.
+* HTTP health endpoint responding.
+* Required config file present.
+* Required upstream reachable.
+* Required model loaded.
+* Required volume mounted.
 * Required credentials present if applicable.
 
 The full validation script should combine these individual checks into a service-chain health report.
@@ -2529,12 +2521,12 @@ Logs should support both direct container log inspection and optional file-based
 
 Recommended logging expectations:
 
-* Logs should identify service name.  
-* Logs should identify startup configuration summary without exposing secrets.  
-* Logs should show upstream endpoint selection.  
-* Logs should show request routing decisions where applicable.  
-* Logs should show validation failures clearly.  
-* Logs should not print API keys or credentials.  
+* Logs should identify service name.
+* Logs should identify startup configuration summary without exposing secrets.
+* Logs should show upstream endpoint selection.
+* Logs should show request routing decisions where applicable.
+* Logs should show validation failures clearly.
+* Logs should not print API keys or credentials.
 * Logs should be documented for each component.
 
 The troubleshooting documentation should explain where to find logs for each service.
@@ -2568,15 +2560,15 @@ This topology section should be updated whenever a service is added, removed, re
 
 Changes that require topology updates include:
 
-* New container service.  
-* New exposed port.  
-* New internal port.  
-* New volume mount.  
-* New environment file.  
-* New upstream dependency.  
-* New deployment profile.  
-* New health-check endpoint.  
-* New model provider.  
+* New container service.
+* New exposed port.
+* New internal port.
+* New volume mount.
+* New environment file.
+* New upstream dependency.
+* New deployment profile.
+* New health-check endpoint.
+* New model provider.
 * New service-chain path.
 
 The coding agent should treat this section as a source of architectural truth. If implementation requires a topology change, the document should be updated in the same phase as the code change.
@@ -2601,14 +2593,14 @@ The goal is to keep configuration clear, portable, and easy for both users and c
 
 Configuration should follow these principles:
 
-* Avoid hardcoded service URLs in application code.  
-* Use environment variables for deployment-specific values.  
-* Use config files for structured routing and provider definitions.  
-* Keep example configuration files committed.  
-* Keep real secrets out of the repository.  
-* Validate configuration before deploying services.  
-* Keep global settings separate from component-specific settings.  
-* Document which files control each service.  
+* Avoid hardcoded service URLs in application code.
+* Use environment variables for deployment-specific values.
+* Use config files for structured routing and provider definitions.
+* Keep example configuration files committed.
+* Keep real secrets out of the repository.
+* Validate configuration before deploying services.
+* Keep global settings separate from component-specific settings.
+* Document which files control each service.
 * Use stable variable names even if the underlying service chain changes.
 
 ## **Configuration Layout** {#configuration-layout}
@@ -2688,7 +2680,7 @@ This value may point to a local IP address, a container service name, local DNS,
 
 Examples:
 
-| AMMARE\_MODEL\_GATEWAY\_URL=http://10.1.10.17:8000AMMARE\_MODEL\_GATEWAY\_URL=http://10.1.10.17:4000AMMARE\_MODEL\_GATEWAY\_URL=http://ammare-litellm:4000AMMARE\_MODEL\_GATEWAY\_URL=http://ammare-headroom:4100 |
+| AMMARE\_MODEL\_GATEWAY\_URL=<http://10.1.10.17:8000>AMMARE\_MODEL\_GATEWAY\_URL=<http://10.1.10.17:4000>AMMARE\_MODEL\_GATEWAY\_URL=<http://ammare-litellm:4000>AMMARE\_MODEL\_GATEWAY\_URL=<http://ammare-headroom:4100> |
 | :---- |
 
 The value can change between phases, but LangChain should continue reading the same variable.
@@ -2708,7 +2700,7 @@ This file should describe available local and cloud model endpoints.
 
 Example structure:
 
-| models:  local\_default:    type: local    provider: vllm    base\_url: http://10.1.10.17:8000    model: local-model-name    enabled: true  cloud\_default:    type: cloud    provider: openai-compatible    base\_url: https://provider.example.com/v1    model: cloud-model-name    enabled: false |
+| models:  local\_default:    type: local    provider: vllm    base\_url: <http://10.1.10.17:8000>    model: local-model-name    enabled: true  cloud\_default:    type: cloud    provider: openai-compatible    base\_url: <https://provider.example.com/v1>    model: cloud-model-name    enabled: false |
 | :---- |
 
 The registry should store model metadata and endpoint definitions, but it should not store raw API keys.
@@ -2724,12 +2716,12 @@ Recommended file:
 
 This file may define:
 
-* Default model.  
-* Local-first behavior.  
-* Model aliases.  
-* Escalation targets.  
-* Fallback targets.  
-* Task-to-model mappings.  
+* Default model.
+* Local-first behavior.
+* Model aliases.
+* Escalation targets.
+* Fallback targets.
+* Task-to-model mappings.
 * Risk-based routing behavior.
 
 Example structure:
@@ -2745,11 +2737,11 @@ Secrets should be kept separate from committed configuration.
 
 Secrets may include:
 
-* Cloud model API keys.  
-* Service tokens.  
-* Webhook credentials.  
-* Repository credentials.  
-* Private endpoints.  
+* Cloud model API keys.
+* Service tokens.
+* Webhook credentials.
+* Repository credentials.
+* Private endpoints.
 * Authentication tokens.
 
 **Recommended handling:**
@@ -2779,14 +2771,14 @@ The project should include configuration validation scripts.
 
 This script should check:
 
-* Required environment files exist.  
-* Required variables are set.  
-* Enabled services have required configuration.  
-* Ports are valid.  
-* URLs are valid.  
-* Referenced files and directories exist.  
-* Model registry entries are valid.  
-* Routing rules reference known models.  
+* Required environment files exist.
+* Required variables are set.
+* Enabled services have required configuration.
+* Ports are valid.
+* URLs are valid.
+* Referenced files and directories exist.
+* Model registry entries are valid.
+* Routing rules reference known models.
 * Secret variables are present when cloud providers are enabled.
 
 Configuration validation should run before deployment and as part of the full service validation process.
@@ -2863,7 +2855,7 @@ This value should represent the next service in the active model path.
 
 **Examples:**
 
-| AMMARE\_MODEL\_GATEWAY\_URL=http://10.1.10.17:8000AMMARE\_MODEL\_GATEWAY\_URL=http://10.1.10.17:4000AMMARE\_MODEL\_GATEWAY\_URL=http://ammare-litellm:4000AMMARE\_MODEL\_GATEWAY\_URL=http://ammare-headroom:4100 |
+| AMMARE\_MODEL\_GATEWAY\_URL=<http://10.1.10.17:8000>AMMARE\_MODEL\_GATEWAY\_URL=<http://10.1.10.17:4000>AMMARE\_MODEL\_GATEWAY\_URL=<http://ammare-litellm:4000>AMMARE\_MODEL\_GATEWAY\_URL=<http://ammare-headroom:4100> |
 | :---- |
 
 The value may be a local IP address, local DNS name, container service name, or reverse-proxy name. For the initial lab deployment, static local IPs are acceptable.
@@ -2913,12 +2905,12 @@ A rewiring event occurs when one service is inserted, removed, bypassed, or repl
 
 Examples:
 
-* Repointing LangChain from the local LLM to LiteLLM.  
-* Repointing LangChain from LiteLLM to Headroom.  
-* Adding a cloud model backend to LiteLLM.  
-* Temporarily bypassing Headroom for troubleshooting.  
-* Disabling memory or retrieval.  
-* Replacing a local model endpoint.  
+* Repointing LangChain from the local LLM to LiteLLM.
+* Repointing LangChain from LiteLLM to Headroom.
+* Adding a cloud model backend to LiteLLM.
+* Temporarily bypassing Headroom for troubleshooting.
+* Disabling memory or retrieval.
+* Replacing a local model endpoint.
 * Moving a service from one host IP to another.
 
 Rewiring should be treated as an intentional change. It should update configuration, documentation, and validation scripts in the same phase.
@@ -2927,13 +2919,13 @@ Rewiring should be treated as an intentional change. It should update configurat
 
 Each rewiring event should include:
 
-* Updated environment variables.  
-* Updated service configuration files.  
-* Updated deployment profile if needed.  
-* Updated topology documentation.  
-* Updated validation script behavior.  
-* Updated troubleshooting notes.  
-* Confirmation that the previous layer can still be tested independently.  
+* Updated environment variables.
+* Updated service configuration files.
+* Updated deployment profile if needed.
+* Updated topology documentation.
+* Updated validation script behavior.
+* Updated troubleshooting notes.
+* Confirmation that the previous layer can still be tested independently.
 * Confirmation that the new full chain works end to end.
 
 The coding agent should not silently change service paths without updating the related documentation.
@@ -2979,13 +2971,13 @@ Deployment profiles should define which chain is active.
 
 Each profile should explicitly define:
 
-* Enabled services.  
-* Disabled services.  
-* LangChain gateway target.  
-* Model routing layer.  
-* Active model providers.  
-* Whether Headroom is in path.  
-* Whether memory/retrieval is enabled.  
+* Enabled services.
+* Disabled services.
+* LangChain gateway target.
+* Model routing layer.
+* Active model providers.
+* Whether Headroom is in path.
+* Whether memory/retrieval is enabled.
 * Whether OpenHands is enabled.
 
 A deployment profile should make the active chain obvious without requiring users to inspect multiple files.
@@ -2996,15 +2988,15 @@ The initial implementation should avoid shortcuts that make later rewiring diffi
 
 The coding agent should avoid:
 
-* Hardcoding LangChain directly to a local model URL.  
-* Embedding provider-specific model names throughout application logic.  
-* Duplicating endpoint URLs in multiple scripts.  
-* Assuming LiteLLM is always present.  
-* Assuming Headroom is always present.  
-* Assuming cloud model providers are always available.  
-* Assuming memory is always enabled.  
-* Assuming all services run on the same host.  
-* Selecting undocumented ports.  
+* Hardcoding LangChain directly to a local model URL.
+* Embedding provider-specific model names throughout application logic.
+* Duplicating endpoint URLs in multiple scripts.
+* Assuming LiteLLM is always present.
+* Assuming Headroom is always present.
+* Assuming cloud model providers are always available.
+* Assuming memory is always enabled.
+* Assuming all services run on the same host.
+* Selecting undocumented ports.
 * Creating undocumented config files.
 
 Temporary direct connections are acceptable during early phases, but they must still be expressed through configuration.
@@ -3015,14 +3007,14 @@ Each service boundary should have a basic contract.
 
 At minimum, each service should define:
 
-* Input API or request format.  
-* Output format.  
-* Health-check behavior.  
-* Error behavior.  
-* Required environment variables.  
-* Required upstream services.  
-* Expected downstream services.  
-* Timeout behavior.  
+* Input API or request format.
+* Output format.
+* Health-check behavior.
+* Error behavior.
+* Required environment variables.
+* Required upstream services.
+* Expected downstream services.
+* Timeout behavior.
 * Logging behavior.
 
 This helps prevent later components from depending on unclear or accidental behavior.
@@ -3048,13 +3040,13 @@ Every service-chain change should be validated.
 
 Validation should include:
 
-* Confirm enabled services are running.  
-* Confirm required ports are listening.  
-* Confirm configured URLs are reachable.  
-* Confirm each service can reach its upstream.  
-* Confirm each service can reach its downstream.  
-* Confirm a test prompt succeeds through the active chain.  
-* Confirm logs show the expected path.  
+* Confirm enabled services are running.
+* Confirm required ports are listening.
+* Confirm configured URLs are reachable.
+* Confirm each service can reach its upstream.
+* Confirm each service can reach its downstream.
+* Confirm a test prompt succeeds through the active chain.
+* Confirm logs show the expected path.
 * Confirm disabled services are not required by the active profile.
 
 The validation result should identify where the chain fails if a test does not pass.
@@ -3070,11 +3062,11 @@ When a full-chain request fails, the troubleshooting path should move from downs
 
 For example:
 
-* Test the local model directly.  
-* Test LiteLLM against the local model.  
-* Test LiteLLM against any cloud provider.  
-* Test Headroom against LiteLLM.  
-* Test LangChain against the configured gateway.  
+* Test the local model directly.
+* Test LiteLLM against the local model.
+* Test LiteLLM against any cloud provider.
+* Test Headroom against LiteLLM.
+* Test LangChain against the configured gateway.
 * Test the full user-facing chain.
 
 This avoids guessing which component is failing.
@@ -3085,13 +3077,13 @@ Every service-chain mode should be documented.
 
 Documentation should include:
 
-* Active request path.  
-* Required services.  
-* Required ports.  
-* Required environment variables.  
-* How to validate the chain.  
-* How to bypass each optional layer.  
-* Common failure points.  
+* Active request path.
+* Required services.
+* Required ports.
+* Required environment variables.
+* How to validate the chain.
+* How to bypass each optional layer.
+* Common failure points.
 * How to revert to the previous chain.
 
 This is especially important because the project will be built in phases and may be used by a coding agent during implementation.
@@ -3116,12 +3108,12 @@ This keeps deployment simple for the user while keeping the implementation maint
 
 The deployment process should be:
 
-* Modular.  
-* Idempotent.  
-* Profile-driven.  
-* Configurable.  
-* Validated after each major step.  
-* Safe to rerun.  
+* Modular.
+* Idempotent.
+* Profile-driven.
+* Configurable.
+* Validated after each major step.
+* Safe to rerun.
 * Easy to troubleshoot.
 
 The top-level deployment script should coordinate the process. Component scripts should own the details of deploying each service.
@@ -3135,22 +3127,22 @@ The main deployment entry point should be:
 
 This script should:
 
-* Load global configuration.  
-* Detect the selected deployment profile.  
-* Run preflight checks.  
-* Prompt to install pre-requisites (if not found)  
-* Determine which components are enabled.  
-* Deploy components in the correct order.  
-* Call validation scripts after deployment.  
-* Print a clear deployment summary.  
-* Stop with a useful error if a required step fails.  
+* Load global configuration.
+* Detect the selected deployment profile.
+* Run preflight checks.
+* Prompt to install pre-requisites (if not found)
+* Determine which components are enabled.
+* Deploy components in the correct order.
+* Call validation scripts after deployment.
+* Print a clear deployment summary.
+* Stop with a useful error if a required step fails.
 * Log deployment operations to a rotating log file
 
 The top-level script should not contain all component-specific logic directly.
 
 ## **Component Deployment Scripts** {#component-deployment-scripts}
 
-Each major service should have its own deployment script. 
+Each major service should have its own deployment script.
 
 **Recommended examples:**
 
@@ -3159,12 +3151,12 @@ Each major service should have its own deployment script.
 
 Each component script should be responsible for:
 
-* Loading its component configuration.  
-* Checking required variables.  
-* Creating required directories.  
-* Creating or updating service definitions.  
-* Starting or restarting the service.  
-* Running a component-level validation check.  
+* Loading its component configuration.
+* Checking required variables.
+* Creating required directories.
+* Creating or updating service definitions.
+* Starting or restarting the service.
+* Running a component-level validation check.
 * Reporting success or failure clearly.
 
 This allows components to be deployed independently during development and troubleshooting.
@@ -3187,12 +3179,12 @@ Example:
 
 The deployment profile should control:
 
-* Enabled services.  
-* Disabled services.  
-* Service startup order.  
-* Active model gateway target.  
-* Optional routing layers.  
-* Optional memory and retrieval services.  
+* Enabled services.
+* Disabled services.
+* Service startup order.
+* Active model gateway target.
+* Optional routing layers.
+* Optional memory and retrieval services.
 * Optional coding-agent workspace services.
 
 A profile should make the active deployment mode clear without requiring users to inspect multiple scripts.
@@ -3216,14 +3208,14 @@ Before deploying services, the top-level script should run preflight validation.
 
 Preflight checks should confirm:
 
-* Required tools are installed.  
-* Required directories exist or can be created.  
-* Required environment files exist.  
-* Required variables are set.  
-* Required ports are available.  
-* Required model paths exist.  
-* Required GPU devices are visible if needed.  
-* Required secrets are present for enabled cloud providers.  
+* Required tools are installed.
+* Required directories exist or can be created.
+* Required environment files exist.
+* Required variables are set.
+* Required ports are available.
+* Required model paths exist.
+* Required GPU devices are visible if needed.
+* Required secrets are present for enabled cloud providers.
 * The selected deployment profile is valid.
 
 Preflight failures should stop deployment before services are modified.
@@ -3236,12 +3228,12 @@ Scripts should avoid assuming a clean system. They should check current state be
 
 Examples:
 
-* Create directories only if missing.  
-* Update service files predictably.  
-* Restart only the services that need restarting.  
-* Do not duplicate environment entries.  
-* Do not overwrite local configuration without warning.  
-* Do not delete persistent data during normal deployment.  
+* Create directories only if missing.
+* Update service files predictably.
+* Restart only the services that need restarting.
+* Do not duplicate environment entries.
+* Do not overwrite local configuration without warning.
+* Do not delete persistent data during normal deployment.
 * Report when no change is required.
 
 This allows users and coding agents to re-run deployment after changes without rebuilding everything manually.
@@ -3265,9 +3257,9 @@ Deployment should include validation at multiple levels.
 
 Recommended validation stages:
 
-* Preflight validation.  
-* Component-level validation after each service is deployed.  
-* Service-chain validation after related services are connected.  
+* Preflight validation.
+* Component-level validation after each service is deployed.
+* Service-chain validation after related services are connected.
 * Final deployment validation.
 
 Example scripts:
@@ -3288,10 +3280,10 @@ The project should include controlled uninstall behavior.
 
 The uninstall process should distinguish between:
 
-* Removing containers or services.  
-* Removing generated service definitions.  
-* Removing temporary files.  
-* Preserving persistent data.  
+* Removing containers or services.
+* Removing generated service definitions.
+* Removing temporary files.
+* Preserving persistent data.
 * Removing persistent data only when explicitly requested.
 
 Normal uninstall should not delete models, vector databases, workspaces, logs, or user configuration unless the user explicitly requests a destructive reset.
@@ -3309,10 +3301,10 @@ Generated files should be predictable and documented.
 
 The project should define:
 
-* Which files are generated.  
-* Which files are user-edited.  
-* Which files are safe to delete.  
-* Which files should not be committed.  
+* Which files are generated.
+* Which files are user-edited.
+* Which files are safe to delete.
+* Which files should not be committed.
 * Which files are examples only.
 
 The coding agent should avoid creating undocumented generated files.
@@ -3323,19 +3315,19 @@ At the end of deployment, the script should print a clear summary.
 
 The summary should include:
 
-* Selected deployment profile.  
-* Enabled components.  
-* Skipped components.  
-* Service names.  
-* Listening ports.  
-* Active model gateway URL.  
-* Validation result.  
-* Log locations.  
+* Selected deployment profile.
+* Enabled components.
+* Skipped components.
+* Service names.
+* Listening ports.
+* Active model gateway URL.
+* Validation result.
+* Log locations.
 * Next suggested command.
 
 Example summary fields:
 
-| Deployment profile: minimal-localEnabled services: ammare-langchain, ammare-local-llmModel gateway: http://10.1.10.17:8000Validation: passedNext command: scripts/validate-service-chain.sh |
+| Deployment profile: minimal-localEnabled services: ammare-langchain, ammare-local-llmModel gateway: <http://10.1.10.17:8000>Validation: passedNext command: scripts/validate-service-chain.sh |
 | :---- |
 
 The summary should help the user understand what was deployed without reading logs.
@@ -3346,12 +3338,12 @@ The coding agent should implement deployment incrementally.
 
 For each deployment phase, the coding agent should:
 
-* Add or update only the scripts required for that phase.  
-* Keep top-level orchestration simple.  
-* Keep component logic in component scripts.  
-* Add validation alongside deployment.  
-* Update documentation when deployment behavior changes.  
-* Avoid hardcoded paths, ports, and service URLs.  
+* Add or update only the scripts required for that phase.
+* Keep top-level orchestration simple.
+* Keep component logic in component scripts.
+* Add validation alongside deployment.
+* Update documentation when deployment behavior changes.
+* Avoid hardcoded paths, ports, and service URLs.
 * Preserve existing working profiles unless explicitly changing them.
 
 The coding agent should not build a full deployment framework before the early components are working.
@@ -3372,14 +3364,14 @@ These scripts are intended for both human users and coding agents. They should p
 
 Helper scripts should follow these principles:
 
-* Be simple to run.  
-* Produce clear pass/fail output.  
-* Avoid hiding important errors.  
-* Avoid requiring users to remember long commands.  
-* Support both individual service checks and full-chain checks.  
-* Read configuration from the same files used by deployment.  
-* Avoid hardcoded paths, ports, and URLs.  
-* Avoid printing secrets.  
+* Be simple to run.
+* Produce clear pass/fail output.
+* Avoid hiding important errors.
+* Avoid requiring users to remember long commands.
+* Support both individual service checks and full-chain checks.
+* Read configuration from the same files used by deployment.
+* Avoid hardcoded paths, ports, and URLs.
+* Avoid printing secrets.
 * Be safe to run repeatedly.
 
 The scripts should support daily operation, not only first-time deployment.
@@ -3423,11 +3415,11 @@ The service-chain validation script should test the active deployment profile.
 
 This script should:
 
-* Load the active deployment profile.  
-* Identify enabled services.  
-* Confirm required ports are reachable.  
-* Confirm required health endpoints respond.  
-* Send a basic test request through the active chain.  
+* Load the active deployment profile.
+* Identify enabled services.
+* Confirm required ports are reachable.
+* Confirm required health endpoints respond.
+* Send a basic test request through the active chain.
 * Report which layer failed if validation does not pass.
 
 The script should not assume the full deployment is always enabled. It should validate the chain that matches the current profile.
@@ -3472,11 +3464,11 @@ Routing should be inspectable and testable.
 
 These scripts should show:
 
-* Active default model.  
-* Available model aliases.  
-* Enabled escalation paths.  
-* Fallback models.  
-* Task-to-model mappings.  
+* Active default model.
+* Available model aliases.
+* Enabled escalation paths.
+* Fallback models.
+* Task-to-model mappings.
 * Whether referenced models exist in the model registry.
 
 This helps users and coding agents confirm that routing behavior matches the intended configuration.
@@ -3505,15 +3497,15 @@ Recommended script:
 
 The support bundle may include:
 
-* Deployment profile.  
-* Enabled services.  
-* Service status.  
-* Listening ports.  
-* Redacted environment summary.  
-* Config validation output.  
-* Recent service logs.  
-* Model registry summary.  
-* Routing summary.  
+* Deployment profile.
+* Enabled services.
+* Service status.
+* Listening ports.
+* Redacted environment summary.
+* Config validation output.
+* Recent service logs.
+* Model registry summary.
+* Routing summary.
 * Service-chain validation result.
 
 The bundle should not include raw secrets, private keys, or full credential files.
@@ -3562,10 +3554,10 @@ Recommended statuses:
 
 Each script should clearly report:
 
-* What was checked.  
-* What passed.  
-* What failed.  
-* What was skipped.  
+* What was checked.
+* What passed.
+* What failed.
+* What was skipped.
 * What command or file should be reviewed next.
 
 Scripts should return appropriate exit codes:
@@ -3579,11 +3571,11 @@ Each helper script should be documented.
 
 Documentation should include:
 
-* Purpose.  
-* Usage examples.  
-* Required configuration.  
-* Expected output.  
-* Common failures.  
+* Purpose.
+* Usage examples.
+* Required configuration.
+* Expected output.
+* Common failures.
 * Related scripts.
 
 The main README should list the most important scripts. Component-specific documentation should reference the scripts relevant to that component.
@@ -3604,14 +3596,14 @@ The documentation should explain the architecture, deployment model, component b
 
 Documentation should follow these principles:
 
-* Keep the main README concise and practical.  
-* Put detailed component documentation in separate files.  
-* Document how to deploy, validate, troubleshoot, and modify each component.  
-* Keep architecture decisions separate from step-by-step operations.  
-* Update documentation in the same phase as code changes.  
-* Avoid duplicating the same explanation across multiple files.  
-* Clearly identify optional components and deferred features.  
-* Include examples where they reduce ambiguity.  
+* Keep the main README concise and practical.
+* Put detailed component documentation in separate files.
+* Document how to deploy, validate, troubleshoot, and modify each component.
+* Keep architecture decisions separate from step-by-step operations.
+* Update documentation in the same phase as code changes.
+* Avoid duplicating the same explanation across multiple files.
+* Clearly identify optional components and deferred features.
+* Include examples where they reduce ambiguity.
 * Treat documentation as part of the deliverable, not an afterthought.
 
 ## **Recommended Documentation Layout** {#recommended-documentation-layout}
@@ -3629,14 +3621,14 @@ The main **README.md** should be the user’s starting point.
 
 It should include:
 
-* Project purpose.  
-* High-level architecture summary.  
-* Supported deployment profiles.  
-* Basic prerequisites.  
-* Minimal deployment instructions.  
-* Common validation commands.  
-* Documentation index.  
-* Known limitations.  
+* Project purpose.
+* High-level architecture summary.
+* Supported deployment profiles.
+* Basic prerequisites.
+* Minimal deployment instructions.
+* Common validation commands.
+* Documentation index.
+* Known limitations.
 * Current implementation status.
 
 The README should not try to contain every technical detail. It should point to the correct detailed document when more information is needed.
@@ -3649,13 +3641,13 @@ The architecture document should describe the intended system design.
 
 It should explain:
 
-* Core architecture goals.  
-* Service chain.  
-* Model routing strategy.  
-* Tool execution and safety model.  
-* Configuration model.  
-* Deployment model.  
-* Validation strategy.  
+* Core architecture goals.
+* Service chain.
+* Model routing strategy.
+* Tool execution and safety model.
+* Configuration model.
+* Deployment model.
+* Validation strategy.
 * Deferred features.
 
 This document should remain conceptual and design-focused. Detailed commands should live in deployment, validation, or component documents.
@@ -3666,15 +3658,15 @@ Each major component should have its own documentation file.
 
 Each component document should include:
 
-* Purpose of the component.  
-* Role in the service chain.  
-* Required configuration files.  
-* Required environment variables.  
-* Ports and endpoints.  
-* Deployment script.  
-* Validation script.  
-* Log inspection script.  
-* Common troubleshooting steps.  
+* Purpose of the component.
+* Role in the service chain.
+* Required configuration files.
+* Required environment variables.
+* Ports and endpoints.
+* Deployment script.
+* Validation script.
+* Log inspection script.
+* Common troubleshooting steps.
 * Safe modification instructions.
 
 Component documentation should be updated whenever the component’s behavior, configuration, ports, or service-chain role changes.
@@ -3685,15 +3677,15 @@ The project should document how to modify each major layer.
 
 Examples:
 
-* How to change LangChain prompts or rules.  
-* How to modify LangChain routing logic.  
-* How to add or remove LangChain tools.  
-* How to change the local LLM model.  
-* How to add a model endpoint to LiteLLM.  
-* How to add a cloud model provider.  
-* How to update routing and escalation rules.  
-* How to enable or disable Headroom.  
-* How to enable or disable memory.  
+* How to change LangChain prompts or rules.
+* How to modify LangChain routing logic.
+* How to add or remove LangChain tools.
+* How to change the local LLM model.
+* How to add a model endpoint to LiteLLM.
+* How to add a cloud model provider.
+* How to update routing and escalation rules.
+* How to enable or disable Headroom.
+* How to enable or disable memory.
 * How to validate changes after modification.
 
 These guides are important because the system is expected to evolve after the initial deployment.
@@ -3704,15 +3696,15 @@ Deployment documentation should explain how to install and operate the platform.
 
 It should include:
 
-* Supported deployment profiles.  
-* Required host assumptions.  
-* Required tools.  
-* Required directories.  
-* Environment file setup.  
-* One-click deployment command.  
-* Component-level deployment commands.  
-* Uninstall behavior.  
-* Reset or purge behavior.  
+* Supported deployment profiles.
+* Required host assumptions.
+* Required tools.
+* Required directories.
+* Environment file setup.
+* One-click deployment command.
+* Component-level deployment commands.
+* Uninstall behavior.
+* Reset or purge behavior.
 * Post-deployment validation.
 
 Deployment documentation should match the actual scripts.
@@ -3725,14 +3717,14 @@ Configuration documentation should explain which files control which behavior.
 
 It should include:
 
-* Global environment file.  
-* Component environment files.  
-* Model registry.  
-* Routing configuration.  
-* Secrets handling.  
-* Deployment profiles.  
-* Example local-lab configuration.  
-* Example cloud-provider configuration.  
+* Global environment file.
+* Component environment files.
+* Model registry.
+* Routing configuration.
+* Secrets handling.
+* Deployment profiles.
+* Example local-lab configuration.
+* Example cloud-provider configuration.
 * Configuration validation command.
 
 This documentation should make it clear where a user or coding agent should make changes.
@@ -3743,13 +3735,13 @@ Validation documentation should explain how to prove the system is working.
 
 It should include:
 
-* Configuration validation.  
-* Component validation.  
-* Endpoint validation.  
-* Service-chain validation.  
-* Routing validation.  
-* Model endpoint validation.  
-* Memory/retrieval validation if enabled.  
+* Configuration validation.
+* Component validation.
+* Endpoint validation.
+* Service-chain validation.
+* Routing validation.
+* Model endpoint validation.
+* Memory/retrieval validation if enabled.
 * Expected pass/fail output.
 
 Troubleshooting documentation should provide failure isolation paths.
@@ -3767,14 +3759,14 @@ The coding agent implementation guide should provide explicit development instru
 
 It should include:
 
-* Build phases.  
-* File layout expectations.  
-* Script standards.  
-* Configuration rules.  
-* Validation requirements.  
-* Documentation update requirements.  
-* What not to hardcode.  
-* How to stop at phase boundaries.  
+* Build phases.
+* File layout expectations.
+* Script standards.
+* Configuration rules.
+* Validation requirements.
+* Documentation update requirements.
+* What not to hardcode.
+* How to stop at phase boundaries.
 * How to report completed work.
 
 This document should be written as an operating guide for a coding agent that is modifying the repository incrementally.
@@ -3785,15 +3777,15 @@ Documentation must be updated whenever implementation changes affect user behavi
 
 Documentation updates are required when:
 
-* A service is added or removed.  
-* A port changes.  
-* A configuration file changes.  
-* An environment variable is added or renamed.  
-* A deployment profile changes.  
-* A service-chain path changes.  
-* A helper script is added or modified.  
-* A validation step changes.  
-* A troubleshooting process changes.  
+* A service is added or removed.
+* A port changes.
+* A configuration file changes.
+* An environment variable is added or renamed.
+* A deployment profile changes.
+* A service-chain path changes.
+* A helper script is added or modified.
+* A validation step changes.
+* A troubleshooting process changes.
 * A deferred feature becomes active.
 
 A code change that modifies behavior but leaves documentation stale should be considered incomplete.
@@ -3833,16 +3825,16 @@ The coding agent is expected to build the platform incrementally, validate each 
 
 The coding agent should follow these principles:
 
-* Build in phases.  
-* Make small, reviewable changes.  
-* Validate each change before moving on.  
-* Avoid hardcoded paths, ports, service URLs, and model names.  
-* Use the documented configuration model.  
-* Use the documented service names where possible.  
-* Keep deployment scripts modular.  
-* Keep helper scripts simple and repeatable.  
-* Update documentation with code changes.  
-* Stop at phase boundaries unless instructed to continue.  
+* Build in phases.
+* Make small, reviewable changes.
+* Validate each change before moving on.
+* Avoid hardcoded paths, ports, service URLs, and model names.
+* Use the documented configuration model.
+* Use the documented service names where possible.
+* Keep deployment scripts modular.
+* Keep helper scripts simple and repeatable.
+* Update documentation with code changes.
+* Stop at phase boundaries unless instructed to continue.
 * Commit changes or prompt end-user to commit.
 
 The coding agent should treat this architecture document as the source of intent, but it should still inspect the current repository state before making changes.
@@ -3853,15 +3845,15 @@ The coding agent should work through the roadmap one phase at a time.
 
 For each phase, it should:
 
-* Review the phase objective.  
-* Identify required files.  
-* Identify affected services.  
-* Identify required configuration.  
-* Create or update only the files needed for that phase.  
-* Add validation for the new behavior.  
-* Run available validation.  
-* Update relevant documentation.  
-* Summarize what changed.  
+* Review the phase objective.
+* Identify required files.
+* Identify affected services.
+* Identify required configuration.
+* Create or update only the files needed for that phase.
+* Add validation for the new behavior.
+* Run available validation.
+* Update relevant documentation.
+* Summarize what changed.
 * Identify what remains deferred.
 
 A phase is not complete until the related deployment, validation, and documentation are updated.
@@ -3887,12 +3879,12 @@ Before modifying files, the coding agent should inspect the repository structure
 
 It should identify:
 
-* Existing scripts.  
-* Existing configuration files.  
-* Existing documentation.  
-* Existing container or service definitions.  
-* Existing tests.  
-* Existing examples.  
+* Existing scripts.
+* Existing configuration files.
+* Existing documentation.
+* Existing container or service definitions.
+* Existing tests.
+* Existing examples.
 * Existing naming conventions.
 
 The coding agent should extend existing patterns when they are reasonable instead of creating parallel structures.
@@ -3905,14 +3897,14 @@ The coding agent should use the documented configuration model.
 
 It should not hardcode:
 
-* Service URLs.  
-* Local IP addresses.  
-* Ports.  
-* Model names.  
-* Model paths.  
-* API keys.  
-* Secrets.  
-* Deployment profiles.  
+* Service URLs.
+* Local IP addresses.
+* Ports.
+* Model names.
+* Model paths.
+* API keys.
+* Secrets.
+* Deployment profiles.
 * Runtime directories.
 
 These values should come from environment files, structured config files, or documented defaults.
@@ -3932,10 +3924,10 @@ When LiteLLM, Headroom, or another gateway layer is added, the coding agent shou
 
 Service-chain changes should update:
 
-* Environment files.  
-* Deployment profiles.  
-* Validation scripts.  
-* Topology documentation.  
+* Environment files.
+* Deployment profiles.
+* Validation scripts.
+* Topology documentation.
 * Troubleshooting documentation.
 
 ## **Script Standards** {#script-standards}
@@ -3944,14 +3936,14 @@ Scripts should be written for repeatable operations.
 
 Deployment, validation, troubleshooting, and lifecycle scripts should:
 
-* Be safe to rerun.  
-* Use clear names.  
-* Read shared configuration.  
-* Print clear status output.  
-* Return useful exit codes.  
-* Avoid destructive actions by default.  
-* Avoid printing secrets.  
-* Fail clearly when required configuration is missing.  
+* Be safe to rerun.
+* Use clear names.
+* Read shared configuration.
+* Print clear status output.
+* Return useful exit codes.
+* Avoid destructive actions by default.
+* Avoid printing secrets.
+* Fail clearly when required configuration is missing.
 * Color code status codes for additional clarity.
 
 Recommended status labels:
@@ -3977,10 +3969,10 @@ The top-level script should not become a large monolithic script containing all 
 
 When a new component is added, the coding agent should add or update:
 
-* Component deployment script.  
-* Component validation script.  
-* Component environment example.  
-* Component documentation.  
+* Component deployment script.
+* Component validation script.
+* Component environment example.
+* Component documentation.
 * Top-level deployment integration if appropriate.
 
 ## **Validation Requirements** {#validation-requirements}
@@ -3989,13 +3981,13 @@ Every meaningful implementation step should include validation.
 
 Validation may include:
 
-* Shell syntax checks.  
-* Configuration validation.  
-* Service health checks.  
-* Endpoint tests.  
-* Service-chain tests.  
-* Routing tests.  
-* Model endpoint tests.  
+* Shell syntax checks.
+* Configuration validation.
+* Service health checks.
+* Endpoint tests.
+* Service-chain tests.
+* Routing tests.
+* Model endpoint tests.
 * Documentation link checks if available.
 
 The coding agent should prefer existing validation scripts over ad hoc commands.
@@ -4008,14 +4000,14 @@ The coding agent should update documentation when it changes behavior.
 
 Documentation updates are required when:
 
-* A new service is added.  
-* A new port is introduced.  
-* A config variable is added or changed.  
-* A deployment profile changes.  
-* A script is added or changed.  
-* A service-chain path changes.  
-* A troubleshooting process changes.  
-* A model endpoint process changes.  
+* A new service is added.
+* A new port is introduced.
+* A config variable is added or changed.
+* A deployment profile changes.
+* A script is added or changed.
+* A service-chain path changes.
+* A troubleshooting process changes.
+* A model endpoint process changes.
 * A deferred feature becomes active.
 
 Documentation should be updated in the same implementation phase as the code change.
@@ -4026,13 +4018,13 @@ The coding agent should implement clear error handling.
 
 Scripts and services should fail with useful messages when:
 
-* Required configuration is missing.  
-* A required file does not exist.  
-* A required port is unavailable.  
-* A service is not reachable.  
-* A model endpoint fails.  
-* Credentials are required but missing.  
-* A deployment profile is invalid.  
+* Required configuration is missing.
+* A required file does not exist.
+* A required port is unavailable.
+* A service is not reachable.
+* A model endpoint fails.
+* Credentials are required but missing.
+* A deployment profile is invalid.
 * A validation check fails.
 
 Errors should identify the failing component and the next file or command to inspect.
@@ -4043,14 +4035,14 @@ The coding agent should avoid unsafe defaults.
 
 It should not:
 
-* Commit secrets.  
-* Print secrets in logs.  
-* Print secrets in commit messages  
-* Mount broad host paths without reason.  
-* Grant unnecessary container privileges.  
-* Expose services publicly by default.  
-* Disable security controls without explanation.  
-* Delete persistent data during normal deployment.  
+* Commit secrets.
+* Print secrets in logs.
+* Print secrets in commit messages
+* Mount broad host paths without reason.
+* Grant unnecessary container privileges.
+* Expose services publicly by default.
+* Disable security controls without explanation.
+* Delete persistent data during normal deployment.
 * Add destructive commands without explicit flags.
 
 Destructive operations should require explicit user action.
@@ -4059,13 +4051,13 @@ Destructive operations should require explicit user action.
 
 At the end of a coding-agent task, the report should include:
 
-* Files changed.  
-* Services affected.  
-* Configuration changed.  
-* Validation performed.  
-* Validation result.  
-* Documentation updated.  
-* Known limitations.  
+* Files changed.
+* Services affected.
+* Configuration changed.
+* Validation performed.
+* Validation result.
+* Documentation updated.
+* Known limitations.
 * Next recommended step.
 
 The report should distinguish between completed work and deferred work.
@@ -4074,12 +4066,12 @@ The report should distinguish between completed work and deferred work.
 
 The coding agent should stop and report when:
 
-* Required information is missing.  
-* A validation step fails and the cause is not clear.  
-* A requested change conflicts with the architecture.  
-* A change would require broad rewiring beyond the current phase.  
-* A destructive action would be required.  
-* A secret or credential is needed.  
+* Required information is missing.
+* A validation step fails and the cause is not clear.
+* A requested change conflicts with the architecture.
+* A change would require broad rewiring beyond the current phase.
+* A destructive action would be required.
+* A secret or credential is needed.
 * A new dependency would significantly change the deployment model.
 
 The coding agent should not hide unresolved failures and continue building additional layers on top of a broken phase.
@@ -4102,11 +4094,11 @@ Memory and retrieval should improve response quality without making model behavi
 
 The system should distinguish between:
 
-* Session context.  
-* Retrieved document context.  
-* Persistent memory.  
-* Runtime task state.  
-* Tool execution results.  
+* Session context.
+* Retrieved document context.
+* Persistent memory.
+* Runtime task state.
+* Tool execution results.
 * User-provided files or project content.
 
 These should not all be treated as the same type of context.
@@ -4117,13 +4109,13 @@ Session context is the short-term conversation or workflow state used during an 
 
 It may include:
 
-* User request.  
-* Recent conversation turns.  
-* Current task plan.  
-* Tool results.  
-* Validation results.  
-* Files inspected during the current workflow.  
-* Current routing decision.  
+* User request.
+* Recent conversation turns.
+* Current task plan.
+* Tool results.
+* Validation results.
+* Files inspected during the current workflow.
+* Current routing decision.
 * Current safety profile.
 
 Session context should be temporary unless explicitly stored elsewhere.
@@ -4134,14 +4126,14 @@ Runtime task state tracks the current workflow inside the middleware.
 
 It may include:
 
-* Active phase or step.  
-* Pending tool requests.  
-* Approved actions.  
-* Rejected actions.  
-* Files modified.  
-* Commands executed.  
-* Validation status.  
-* Errors encountered.  
+* Active phase or step.
+* Pending tool requests.
+* Approved actions.
+* Rejected actions.
+* Files modified.
+* Commands executed.
+* Validation status.
+* Errors encountered.
 * Escalation decisions.
 
 This state is operational data. It helps the middleware manage the workflow, but it does not automatically become persistent memory.
@@ -4152,13 +4144,13 @@ Retrieved context is information pulled from an indexed source to support a spec
 
 Sources may include:
 
-* Project documentation.  
-* Architecture files.  
-* Repository files.  
-* Component documentation.  
-* Prior implementation notes.  
-* Validation output.  
-* Troubleshooting guides.  
+* Project documentation.
+* Architecture files.
+* Repository files.
+* Component documentation.
+* Prior implementation notes.
+* Validation output.
+* Troubleshooting guides.
 * User-provided documents.
 
 Retrieved context should be relevant, limited, and traceable to its source.
@@ -4173,12 +4165,12 @@ It should be treated carefully because stale or incorrect memory can degrade fut
 
 Persistent memory may include:
 
-* Long-term project preferences.  
-* Stable architecture decisions.  
-* Reusable environment assumptions.  
-* Confirmed naming conventions.  
-* Accepted deployment defaults.  
-* Known constraints.  
+* Long-term project preferences.
+* Stable architecture decisions.
+* Reusable environment assumptions.
+* Confirmed naming conventions.
+* Accepted deployment defaults.
+* Known constraints.
 * Repeated user preferences.
 
 Persistent memory should not automatically store every conversation, log, file, or tool result.
@@ -4189,15 +4181,15 @@ The platform should define what may be stored and what should not be stored.
 
 Memory should not store:
 
-* Raw secrets.  
-* API keys.  
-* Passwords.  
-* Private keys.  
-* Sensitive tokens.  
-* Temporary errors that are no longer relevant.  
-* Large unfiltered logs.  
-* Unverified assumptions.  
-* Data that belongs only to a single task.  
+* Raw secrets.
+* API keys.
+* Passwords.
+* Private keys.
+* Sensitive tokens.
+* Temporary errors that are no longer relevant.
+* Large unfiltered logs.
+* Unverified assumptions.
+* Data that belongs only to a single task.
 * Generated content that was rejected or superseded.
 
 Memory should prefer stable, confirmed information.
@@ -4210,12 +4202,12 @@ The retrieval backend should be optional.
 
 Possible stored data may include:
 
-* Documentation chunks.  
-* Architecture notes.  
-* Component guides.  
-* Repository summaries.  
-* Troubleshooting notes.  
-* Known issue records.  
+* Documentation chunks.
+* Architecture notes.
+* Component guides.
+* Repository summaries.
+* Troubleshooting notes.
+* Known issue records.
 * Validation history summaries.
 
 The retrieval backend should support rebuild or reindex operations so stale content can be corrected.
@@ -4241,13 +4233,13 @@ Retrieved context should be injected into prompts according to policy.
 
 The policy should define:
 
-* Which sources are eligible for retrieval.  
-* How many chunks may be injected.  
-* Maximum context size.  
-* Source priority.  
-* Whether retrieved context must be cited internally.  
-* Whether stale content should be excluded.  
-* Whether sensitive content must be redacted.  
+* Which sources are eligible for retrieval.
+* How many chunks may be injected.
+* Maximum context size.
+* Source priority.
+* Whether retrieved context must be cited internally.
+* Whether stale content should be excluded.
+* Whether sensitive content must be redacted.
 * Whether retrieval can be disabled per task.
 
 The system should favor smaller, higher-quality context over large context dumps.
@@ -4258,10 +4250,10 @@ Retrieved context should be traceable.
 
 When the model uses retrieved context, the middleware should track:
 
-* Source file.  
-* Chunk identifier.  
-* Retrieval score if available.  
-* Timestamp or index version.  
+* Source file.
+* Chunk identifier.
+* Retrieval score if available.
+* Timestamp or index version.
 * Whether the source is user-provided, generated, or system documentation.
 
 This helps debug poor responses and makes retrieval behavior easier to improve.
@@ -4272,9 +4264,9 @@ Memory and retrieval may influence model routing, but they should not bypass rou
 
 For example:
 
-* A simple request with strong retrieved context may stay on a local model.  
-* A complex request with many retrieved sources may escalate to a stronger model.  
-* Sensitive retrieved context may force local-only routing.  
+* A simple request with strong retrieved context may stay on a local model.
+* A complex request with many retrieved sources may escalate to a stronger model.
+* Sensitive retrieved context may force local-only routing.
 * Large context requirements may require a model with a larger context window.
 
 Routing policy should remain explicit and configurable.
@@ -4287,11 +4279,11 @@ Stored context may help the model understand the environment, but it should not 
 
 Tool execution should still follow:
 
-* Approved tool registry.  
-* Default deny rules.  
-* Human approval gates.  
-* File access controls.  
-* Secret handling.  
+* Approved tool registry.
+* Default deny rules.
+* Human approval gates.
+* File access controls.
+* Secret handling.
 * Audit logging.
 
 Memory improves context. It does not expand authority.
@@ -4307,13 +4299,13 @@ The indexing process should be controlled and repeatable.
 
 Indexing scripts should:
 
-* Load retrieval configuration.  
-* Identify eligible files.  
-* Exclude secrets and ignored paths.  
-* Chunk content consistently.  
-* Generate embeddings.  
-* Store index metadata.  
-* Report indexed sources.  
+* Load retrieval configuration.
+* Identify eligible files.
+* Exclude secrets and ignored paths.
+* Chunk content consistently.
+* Generate embeddings.
+* Store index metadata.
+* Report indexed sources.
 * Report skipped sources.
 
 The coding agent should not silently index everything in the repository without clear rules.
@@ -4324,12 +4316,12 @@ Retrieval should have its own validation process.
 
 Validation should confirm:
 
-* Retrieval backend is running if enabled.  
-* The embedded model is reachable.  
-* Documents can be indexed.  
-* Queries return relevant results.  
-* Disabled retrieval does not break the core service chain.  
-* Sensitive files are excluded.  
+* Retrieval backend is running if enabled.
+* The embedded model is reachable.
+* Documents can be indexed.
+* Queries return relevant results.
+* Disabled retrieval does not break the core service chain.
+* Sensitive files are excluded.
 * Reindexing works.
 
 Retrieval quality should be tested separately from model quality.
@@ -4340,10 +4332,10 @@ Memory and retrieval data should be removable.
 
 The platform should provide a safe way to:
 
-* Clear session state.  
-* Rebuild retrieval indexes.  
-* Remove indexed documents.  
-* Purge persistent memory.  
+* Clear session state.
+* Rebuild retrieval indexes.
+* Remove indexed documents.
+* Purge persistent memory.
 * Reset memory services.
 
 Destructive reset operations should require explicit flags.
@@ -4361,14 +4353,14 @@ Memory and retrieval behavior should be documented.
 
 Documentation should explain:
 
-* What is stored.  
-* What is not stored.  
-* Where data is stored.  
-* How retrieval is configured.  
-* How documents are indexed.  
-* How memory is cleared.  
-* How retrieval is disabled.  
-* How to troubleshoot bad retrieval results.  
+* What is stored.
+* What is not stored.
+* Where data is stored.
+* How retrieval is configured.
+* How documents are indexed.
+* How memory is cleared.
+* How retrieval is disabled.
+* How to troubleshoot bad retrieval results.
 * How memory affects routing and prompts.
 
 This is especially important because memory-related behavior can be difficult to understand if it is not documented clearly.
@@ -4389,14 +4381,14 @@ The initial target environment is a local lab or development host. The platform 
 
 The deployment model should support:
 
-* Local-first operation.  
-* Containerized services.  
-* Modular component deployment.  
-* Static local IPs or local DNS.  
-* Optional cloud model providers.  
-* Optional memory and retrieval services.  
-* Repeatable deployment through scripts.  
-* Independent validation of each service.  
+* Local-first operation.
+* Containerized services.
+* Modular component deployment.
+* Static local IPs or local DNS.
+* Optional cloud model providers.
+* Optional memory and retrieval services.
+* Repeatable deployment through scripts.
+* Independent validation of each service.
 * Simple troubleshooting and rollback.
 
 The deployment should begin small and expand only as each phase is validated.
@@ -4439,14 +4431,14 @@ The deployment may use Podman, Docker , or another compatible container runtime 
 
 Each service should define:
 
-* Container name.  
-* Image source.  
-* Published ports.  
-* Environment files.  
-* Config mounts.  
-* Data mounts.  
-* Log behavior.  
-* Health check.  
+* Container name.
+* Image source.
+* Published ports.
+* Environment files.
+* Config mounts.
+* Data mounts.
+* Log behavior.
+* Health check.
 * Restart behavior.
 
 The coding agent should avoid assuming that all services run inside one container.
@@ -4457,11 +4449,11 @@ The default network model should be local and private.
 
 Supported patterns include:
 
-* Single-host container networking.  
-* Static local lab IP addresses.  
-* Local DNS names.  
-* Container service names.  
-* Host-published local ports.  
+* Single-host container networking.
+* Static local lab IP addresses.
+* Local DNS names.
+* Container service names.
+* Host-published local ports.
 * Multi-host local lab deployment if needed.
 
 Public inbound exposure should not be required.
@@ -4500,10 +4492,10 @@ Secrets should be stored separately from committed example files.
 
 The deployment should clearly distinguish between:
 
-* Example environment files.  
-* Local environment files.  
-* Structured config files.  
-* Secret files.  
+* Example environment files.
+* Local environment files.
+* Structured config files.
+* Secret files.
 * Runtime-generated files.
 
 No raw secrets should be committed to the repository. No secrets in commit messages.
@@ -4525,12 +4517,12 @@ The default profile should be the simplest working deployment.
 
 The initial host should provide:
 
-* Supported Linux operating system.  
-* Container runtime.  
-* Sufficient CPU and memory.  
-* GPU support if required by the local model.  
-* Local storage for model files.  
-* Local network access between enabled services.  
+* Supported Linux operating system.
+* Container runtime.
+* Sufficient CPU and memory.
+* GPU support if required by the local model.
+* Local storage for model files.
+* Local network access between enabled services.
 * Optional outbound internet access for cloud providers.
 
 Exact hardware requirements should be documented after the initial model runtime is selected.
@@ -4541,12 +4533,12 @@ The initial deployment should not attempt to solve every production concern.
 
 Deferred or optional areas may include:
 
-* Kubernetes deployment.  
-* High availability.  
-* Multi-node orchestration.  
-* Enterprise identity integration.  
-* Centralized observability stack.  
-* Production ingress design.  
+* Kubernetes deployment.
+* High availability.
+* Multi-node orchestration.
+* Enterprise identity integration.
+* Centralized observability stack.
+* Production ingress design.
 * Multi-user authorization model.
 
 These may be considered later if the project matures beyond the local lab deployment.
@@ -4571,18 +4563,18 @@ The end user should be able to configure an IDE, coding assistant, or agentic CL
 
 Beyond basic text generation, the platform should also validate controlled agentic behavior. When authorized by policy and user approval, the system should be able to perform practical development and troubleshooting tasks such as:
 
-* Inspecting project files.  
-* Creating new files.  
-* Modifying existing files.  
-* Generating patches or diffs.  
-* Running approved scripts.  
-* Running tests or validation commands.  
-* Inspecting command output.  
-* Reviewing logs.  
-* Tailing logs for troubleshooting.  
-* Checking service status.  
-* Identifying likely failure points.  
-* Recommending or applying corrective changes.  
+* Inspecting project files.
+* Creating new files.
+* Modifying existing files.
+* Generating patches or diffs.
+* Running approved scripts.
+* Running tests or validation commands.
+* Inspecting command output.
+* Reviewing logs.
+* Tailing logs for troubleshooting.
+* Checking service status.
+* Identifying likely failure points.
+* Recommending or applying corrective changes.
 * Summarizing what was changed and what validation was performed.
 
 The platform should not only answer questions about code or infrastructure. It should be able to participate in a controlled development workflow where the model reasons about the task, requests approved tool actions, receives tool results, and continues troubleshooting or implementation based on observed system state.
@@ -4593,14 +4585,14 @@ A successful validation result should prove that aMMare can operate as more than
 
 Validation should follow these principles:
 
-* Validate one layer before adding the next.  
-* Test components independently.  
-* Test the active service chain end to end.  
-* Use repeatable scripts instead of manual commands where possible.  
-* Return clear pass/fail output.  
-* Preserve logs for troubleshooting.  
-* Avoid validating optional components when they are disabled.  
-* Confirm documentation matches the implemented behavior.  
+* Validate one layer before adding the next.
+* Test components independently.
+* Test the active service chain end to end.
+* Use repeatable scripts instead of manual commands where possible.
+* Return clear pass/fail output.
+* Preserve logs for troubleshooting.
+* Avoid validating optional components when they are disabled.
+* Confirm documentation matches the implemented behavior.
 * Stop before adding complexity if the current phase does not pass.
 
 The project should treat failed validation as a phase blocker.
@@ -4611,16 +4603,16 @@ Each phase should define its own success criteria.
 
 At minimum, a phase is successful when:
 
-* Required files are present.  
-* Required configuration is documented.  
-* Required services start successfully.  
-* Required ports are reachable.  
-* Health checks pass.  
-* Component validation scripts pass.  
-* Active service-chain validation passes.  
-* Logs show expected behavior.  
-* Errors are handled clearly.  
-* Documentation has been updated.  
+* Required files are present.
+* Required configuration is documented.
+* Required services start successfully.
+* Required ports are reachable.
+* Health checks pass.
+* Component validation scripts pass.
+* Active service-chain validation passes.
+* Logs show expected behavior.
+* Errors are handled clearly.
+* Documentation has been updated.
 * No secrets are committed.
 
 If a phase introduces a new component, that component should have deployment, validation, logging, and troubleshooting support.
@@ -4631,15 +4623,15 @@ Configuration validation should confirm that the active deployment profile is us
 
 Validation should check:
 
-* Required environment files exist.  
-* Required variables are set.  
-* Enabled components have required configuration.  
-* Disabled components are not required by the active profile.  
-* Ports are valid and available.  
-* Paths exist or can be created.  
-* Model registry entries are valid.  
-* Routing rules reference known models.  
-* Secrets are present when cloud providers are enabled.  
+* Required environment files exist.
+* Required variables are set.
+* Enabled components have required configuration.
+* Disabled components are not required by the active profile.
+* Ports are valid and available.
+* Paths exist or can be created.
+* Model registry entries are valid.
+* Routing rules reference known models.
+* Secrets are present when cloud providers are enabled.
 * No known secret files are committed.
 
 Recommended script:
@@ -4658,12 +4650,12 @@ Examples:
 
 Component validation should confirm:
 
-* Container or service is running.  
-* Required port is listening.  
-* Health endpoint responds if available.  
-* Required config files are mounted or readable.  
-* Required upstream service is reachable.  
-* Logs do not show fatal startup errors.  
+* Container or service is running.
+* Required port is listening.
+* Health endpoint responds if available.
+* Required config files are mounted or readable.
+* Required upstream service is reachable.
+* Logs do not show fatal startup errors.
 * A minimal functional test succeeds where practical.
 
 ## **Service-Chain Validation** {#service-chain-validation-1}
@@ -4707,13 +4699,13 @@ When routing is enabled, routing behavior should be validated separately from ba
 
 Validation should confirm:
 
-* Default model route works.  
-* Local model route works.  
-* Cloud model route works if enabled.  
-* Disabled providers are not selected.  
-* Escalation rules select the expected target.  
-* Fallback rules behave as expected.  
-* Routing decisions are logged.  
+* Default model route works.
+* Local model route works.
+* Cloud model route works if enabled.
+* Disabled providers are not selected.
+* Escalation rules select the expected target.
+* Fallback rules behave as expected.
+* Routing decisions are logged.
 * Routing configuration references valid models.
 
 Recommended scripts:
@@ -4727,13 +4719,13 @@ If tool execution is enabled, validation should confirm that tool access is cont
 
 Validation should check:
 
-* Approved tools are available.  
-* Unapproved tools are denied.  
-* File access is scoped correctly.  
-* Write actions require approval when configured.  
-* Dangerous commands are blocked.  
-* Secrets are not returned in tool output.  
-* Tool execution is logged.  
+* Approved tools are available.
+* Unapproved tools are denied.
+* File access is scoped correctly.
+* Write actions require approval when configured.
+* Dangerous commands are blocked.
+* Secrets are not returned in tool output.
+* Tool execution is logged.
 * Failed tools return clear errors.
 
 Tool validation should be conservative. It should prove that safety controls work, not only that tools can execute.
@@ -4744,13 +4736,13 @@ If memory or retrieval is enabled, it should be validated independently.
 
 Validation should confirm:
 
-* Memory service is running if required.  
-* Vector database is reachable if enabled.  
-* Embedding model is reachable if enabled.  
-* Documents can be indexed.  
-* Retrieval returns relevant results.  
-* Sensitive files are excluded.  
-* Retrieval can be disabled without breaking the core service chain.  
+* Memory service is running if required.
+* Vector database is reachable if enabled.
+* Embedding model is reachable if enabled.
+* Documents can be indexed.
+* Retrieval returns relevant results.
+* Sensitive files are excluded.
+* Retrieval can be disabled without breaking the core service chain.
 * Memory or index data can be reset when explicitly requested.
 
 Recommended scripts:
@@ -4764,13 +4756,13 @@ A successful deployment should produce a clear summary.
 
 The summary should include:
 
-* Active deployment profile.  
-* Enabled services.  
-* Skipped services.  
-* Active model gateway URL.  
-* Published ports.  
-* Validation results.  
-* Log locations.  
+* Active deployment profile.
+* Enabled services.
+* Skipped services.
+* Active model gateway URL.
+* Published ports.
+* Validation results.
+* Log locations.
 * Next recommended command.
 
 A deployment should not be considered successful if the script completes but the active service chain fails validation.
@@ -4781,13 +4773,13 @@ Documentation should be checked as part of phase completion.
 
 Documentation should accurately describe:
 
-* Current service names.  
-* Current ports.  
-* Current environment variables.  
-* Current deployment profiles.  
-* Current service-chain paths.  
-* Current validation scripts.  
-* Current troubleshooting process.  
+* Current service names.
+* Current ports.
+* Current environment variables.
+* Current deployment profiles.
+* Current service-chain paths.
+* Current validation scripts.
+* Current troubleshooting process.
 * Current limitations.
 
 If implementation and documentation disagree, the phase should be considered incomplete.
@@ -4796,32 +4788,32 @@ If implementation and documentation disagree, the phase should be considered inc
 
 The final system should be considered successful when:
 
-* The selected deployment profile deploys cleanly.  
-* All enabled services start successfully.  
-* All required health checks pass.  
-* The active service chain passes end-to-end validation.  
-* Local model routing works.  
-* Cloud model routing works if enabled.  
-* Escalation and fallback behavior match policy.  
-* Optional components can be disabled cleanly.  
-* Logs are useful for troubleshooting.  
-* Helper scripts work as documented.  
-* Documentation is complete enough for a new user or coding agent to continue safely.  
-* No secrets are committed.  
+* The selected deployment profile deploys cleanly.
+* All enabled services start successfully.
+* All required health checks pass.
+* The active service chain passes end-to-end validation.
+* Local model routing works.
+* Cloud model routing works if enabled.
+* Escalation and fallback behavior match policy.
+* Optional components can be disabled cleanly.
+* Logs are useful for troubleshooting.
+* Helper scripts work as documented.
+* Documentation is complete enough for a new user or coding agent to continue safely.
+* No secrets are committed.
 * Destructive actions require explicit user intent.
 
 ## **Failure Criteria** {#failure-criteria}
 
 A phase should not proceed if:
 
-* Required services do not start.  
-* Health checks fail.  
-* The active service chain fails.  
-* Configuration is unclear or duplicated.  
-* Required scripts are missing.  
-* Logs do not identify the failure point.  
-* Documentation is stale.  
-* Secrets are exposed.  
+* Required services do not start.
+* Health checks fail.
+* The active service chain fails.
+* Configuration is unclear or duplicated.
+* Required scripts are missing.
+* Logs do not identify the failure point.
+* Documentation is stale.
+* Secrets are exposed.
 * The implementation requires manual undocumented steps.
 
 Failures should be fixed or documented before moving to the next phase.
@@ -4844,12 +4836,12 @@ A feature should be deferred when it adds complexity without being required to p
 
 Deferred features may be revisited after the platform can reliably:
 
-* Deploy the minimal local service chain.  
-* Route through LiteLLM.  
-* Add at least one cloud model provider.  
-* Apply routing and escalation rules.  
-* Validate the active service chain.  
-* Use modular deployment scripts.  
+* Deploy the minimal local service chain.
+* Route through LiteLLM.
+* Add at least one cloud model provider.
+* Apply routing and escalation rules.
+* Validate the active service chain.
+* Use modular deployment scripts.
 * Provide clear documentation and troubleshooting guidance.
 
 ## **Deferred Features List** {#deferred-features-list}
@@ -4878,19 +4870,19 @@ The following features should be considered v2 or later unless explicitly pulled
 
 The following capabilities are not deferred because they are required for the initial architecture:
 
-* Local LLM endpoint.  
-* LangChain middleware.  
-* Logical model gateway configuration.  
-* LiteLLM routing layer.  
-* At least one local model route.  
-* At least one optional cloud model route.  
-* Basic routing and escalation configuration.  
-* Modular deployment scripts.  
-* Component validation scripts.  
-* Service-chain validation script.  
-* Component documentation.  
-* Configuration documentation.  
-* Troubleshooting documentation.  
+* Local LLM endpoint.
+* LangChain middleware.
+* Logical model gateway configuration.
+* LiteLLM routing layer.
+* At least one local model route.
+* At least one optional cloud model route.
+* Basic routing and escalation configuration.
+* Modular deployment scripts.
+* Component validation scripts.
+* Service-chain validation script.
+* Component documentation.
+* Configuration documentation.
+* Troubleshooting documentation.
 * Secret exclusion from committed files.
 
 These are part of the minimum architecture required to prove aMMare.
@@ -4901,12 +4893,12 @@ Some features may be optional in the initial implementation but should be planne
 
 **Examples:**
 
-* Headroom.  
-* OpenHands.  
-* Memory and retrieval.  
-* Vector database.  
-* Embedding model.  
-* Cloud model providers beyond the first.  
+* Headroom.
+* OpenHands.
+* Memory and retrieval.
+* Vector database.
+* Embedding model.
+* Cloud model providers beyond the first.
 * Optional UI.
 
 These features should not block the minimal local deployment, but the architecture should avoid choices that make them difficult to add later.
@@ -4915,13 +4907,13 @@ These features should not block the minimal local deployment, but the architectu
 
 Deferred features may be reconsidered when:
 
-* The core service chain is stable.  
-* Deployment scripts are repeatable.  
-* Validation scripts are reliable.  
-* Documentation matches implementation.  
-* Routing and escalation behavior is working.  
-* Troubleshooting paths are clear.  
-* The added feature solves a real operational need.  
+* The core service chain is stable.
+* Deployment scripts are repeatable.
+* Validation scripts are reliable.
+* Documentation matches implementation.
+* Routing and escalation behavior is working.
+* Troubleshooting paths are clear.
+* The added feature solves a real operational need.
 * The added feature can be tested independently.
 
 A deferred feature should not be added only because it is interesting. It should have a clear purpose and a validation plan.
@@ -4946,12 +4938,12 @@ The end user should be able to configure a supported client tool to use aMMare a
 
 Supported tools may include:
 
-* Zed.  
-* Continue plugin for VS Code.  
-* Native VSCode chat or compatible model-provider configuration.  
-* Cline.  
-* OpenHands.  
-* Aider.  
+* Zed.
+* Continue plugin for VS Code.
+* Native VSCode chat or compatible model-provider configuration.
+* Cline.
+* OpenHands.
+* Aider.
 * Other OpenAI-compatible clients (GUI/CLI) that allow bring-your-own (BYO) Endpoints
 
 The exact level of support may vary by tool, but the project should aim to provide a clear path for each supported integration.
@@ -4964,14 +4956,14 @@ This improves compatibility with existing tools that already support OpenAI-comp
 
 The documentation should clearly define:
 
-* Gateway base URL.  
-* Required API path.  
-* Model name or alias to use.  
-* Authentication requirements, if any.  
-* Supported request formats.  
-* Known limitations by tool.  
-* Whether streaming is supported.  
-* Whether tool/function calling is supported.  
+* Gateway base URL.
+* Required API path.
+* Model name or alias to use.
+* Authentication requirements, if any.
+* Supported request formats.
+* Known limitations by tool.
+* Whether streaming is supported.
+* Whether tool/function calling is supported.
 * Whether file operations are handled by the client, aMMare middleware, or both.
 
 The goal is not to make every client behave identically. The goal is to make the expected behavior clear and easy to configure.
@@ -4987,13 +4979,13 @@ The project should include helper scripts that configure supported tools to use 
 
 These scripts should:
 
-* Read the active aMMare gateway endpoint from configuration.  
-* Detect whether the target tool is installed where practical.  
-* Locate the expected user configuration path.  
-* Back up existing client configuration before modifying it.  
-* Add or update the aMMare provider entry.  
-* Avoid overwriting unrelated user settings.  
-* Print the final endpoint and model alias being configured.  
+* Read the active aMMare gateway endpoint from configuration.
+* Detect whether the target tool is installed where practical.
+* Locate the expected user configuration path.
+* Back up existing client configuration before modifying it.
+* Add or update the aMMare provider entry.
+* Avoid overwriting unrelated user settings.
+* Print the final endpoint and model alias being configured.
 * Clearly report any manual steps still required.
 
 If a tool’s configuration format changes or cannot be safely modified, the script should stop and provide manual instructions instead of making unsafe assumptions.
@@ -5009,15 +5001,15 @@ Each supported client tool should have a short integration document.
 
 Each document should include:
 
-* What the tool is used for in the aMMare workflow.  
-* Whether the integration is fully supported, partially supported, or experimental.  
-* Required aMMare deployment profile.  
-* Required gateway URL.  
-* Required model alias.  
-* Required authentication setting.  
-* Manual configuration steps.  
-* Validation prompt.  
-* Troubleshooting notes.  
+* What the tool is used for in the aMMare workflow.
+* Whether the integration is fully supported, partially supported, or experimental.
+* Required aMMare deployment profile.
+* Required gateway URL.
+* Required model alias.
+* Required authentication setting.
+* Manual configuration steps.
+* Validation prompt.
+* Troubleshooting notes.
 * Link to the upstream tool documentation.
 
 The project may link to external installation and product documentation instead of recreating full upstream documentation. The aMMare documentation should focus on what is specific to connecting that tool to the aMMare gateway.
@@ -5028,12 +5020,12 @@ The documentation should provide consistent example values.
 
 **Example local gateway:**
 
-| AMMARE\_GATEWAY\_URL=http://10.1.10.17:8080 |
+| AMMARE\_GATEWAY\_URL=<http://10.1.10.17:8080> |
 | :---- |
 
 **Example OpenAI-compatible base URL:**
 
-| http://10.1.10.17:8080/v1 |
+| <http://10.1.10.17:8080/v1> |
 | :---- |
 
 **Example model alias:**
@@ -5075,10 +5067,10 @@ Different client tools may interact with aMMare differently.
 
 For example:
 
-* Some tools may only need an OpenAI-compatible base URL and model name.  
-* Some tools may manage file edits locally and only use aMMare for model responses.  
-* Some tools may support agentic workflows but require separate permission settings.  
-* Some tools may support custom providers but not full tool calling.  
+* Some tools may only need an OpenAI-compatible base URL and model name.
+* Some tools may manage file edits locally and only use aMMare for model responses.
+* Some tools may support agentic workflows but require separate permission settings.
+* Some tools may support custom providers but not full tool calling.
 * Some tools may require manual configuration because their settings are not safely scriptable.
 
 The integration documentation should identify these differences clearly.
@@ -5089,13 +5081,13 @@ Each client integration should include a validation process.
 
 Validation should confirm:
 
-* The client can connect to the aMMare gateway.  
-* The configured model alias is accepted.  
-* A basic prompt returns a readable response.  
-* Streaming works if supported.  
-* Coding prompts work as expected.  
-* Agentic tool behavior works where supported.  
-* Errors are clear when the gateway is unavailable.  
+* The client can connect to the aMMare gateway.
+* The configured model alias is accepted.
+* A basic prompt returns a readable response.
+* Streaming works if supported.
+* Coding prompts work as expected.
+* Agentic tool behavior works where supported.
+* Errors are clear when the gateway is unavailable.
 * The client is using aMMare and not silently falling back to another provider.
 
 **Recommended validation prompt:**
@@ -5112,10 +5104,10 @@ Even if a client tool supports autonomous file edits or command execution, aMMar
 
 The documentation should explain where permissions are controlled:
 
-* In the client tool.  
-* In the aMMare gateway.  
-* In the LangChain middleware.  
-* In the local workspace.  
+* In the client tool.
+* In the aMMare gateway.
+* In the LangChain middleware.
+* In the local workspace.
 * In the operating system or container runtime.
 
 Users should understand whether a task is being executed by the client directly or by aMMare-controlled tooling.
