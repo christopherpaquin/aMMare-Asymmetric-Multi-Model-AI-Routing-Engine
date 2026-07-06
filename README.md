@@ -61,17 +61,6 @@ The system is designed around a physical service-chain model. Requests flow from
 
 ---
 
-## Tool Execution & Safety Model
-
-`aMMare` enforces a **Default Deny** safety profile. All tool execution is mediated and validated by the LangChain middleware:
-
-1. **Local Workspace Boundaries:** File read/write operations are confined to defined project folders.
-2. **Command Execution Controls:** Allowed shell commands are verified against an Approved Tool Registry.
-3. **Human Approval Gates:** High-risk actions (e.g., executing scripts, committing code, network calls) can require user confirmation before execution.
-4. **Credential Protection:** Active secrets and API keys are blocked from being logged, committed, or sent to model providers.
-
----
-
 ## Development Roadmap
 
 The project is structured around 13 distinct development phases:
@@ -103,49 +92,3 @@ The project is structured around 13 distinct development phases:
   * *Includes Docker Compose configurations and systemd service profiles.*
 * **Phase Twelve: Documentation, Hardening, and Release Packaging**
   * Audit security boundaries, complete API documentation, package release bundles, and baseline configurations.
-
----
-
-## Getting Started
-
-### Local Setup & Hook Installation
-
-This repository implements rigorous linting, code quality, and security checks via `pre-commit` hooks. These checks run locally before code files are staged or committed.
-
-1. **Clone the Repository:**
-
-    ```bash
-    git clone git@github.com:christopherpaquin/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine.git
-    cd aMMare-Asymmetric-Multi-Model-AI-Routing-Engine
-    ```
-
-2. **Install Pre-Commit Hooks:**
-    Ensure you have `pre-commit` installed, then register the hooks:
-
-    ```bash
-    pre-commit install && pre-commit install --hook-type commit-msg
-    ```
-
-3. **Run Checks Manually:**
-    To scan all files in the repository for style, linting, and secrets validation:
-
-    ```bash
-    pre-commit run --all-files
-    ```
-
-### Installed Linters & Checks
-
-* **Trailing Whitespace & End of Files:** Ensures standard formatting constraints.
-* **Ruff:** Lints and formats Python files.
-* **ShellCheck:** Validates Bash scripts for syntax, logic errors, and security issues.
-* **Markdownlint:** Enforces styling guidelines across documentation files.
-* **Detect Secrets:** Scans all files in the repository against a baseline to prevent accidental commits of keys/secrets.
-* **Commit Message Secret Scanner:** A custom local `commit-msg` hook that intercepts commit message files, strips comment tags, and alerts if secrets are typed into the commit text.
-
----
-
-## Document Control
-
-* **Document ID:** `ARCH-AMMARE-2026-V1.2`
-* **Author:** Chris Paquin
-* **Date:** July 2026
