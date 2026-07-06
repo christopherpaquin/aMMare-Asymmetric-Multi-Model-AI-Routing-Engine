@@ -5611,4 +5611,4 @@ The aMMare client integration strategy is intended to make the platform easy to 
 
 The project should provide scripts and documentation for tools such as Zed, Continue for VS Code, native VS Code chat, Cline, OpenHands, and Aider. The goal is to let users quickly configure their preferred IDE or agentic CLI to use aMMare as the gateway endpoint while preserving clear documentation, validation steps, and safety boundaries.
 
-[image1]: images/aMMareV1.png
+[image1]: images/ammare-flow-diag-v1.png
