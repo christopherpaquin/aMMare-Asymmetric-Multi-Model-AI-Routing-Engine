@@ -24,7 +24,7 @@
 Ammare (or aMMare) is pronounced /ˈæm.ɑːɹ/
 
 - Syllable 1 (/ˈæm/): Say the word "am" (as in, "I am"). Make sure the "a" sound is flat and sharp, like the "a" in cat or trap. Drop your jaw slightly and push the sound from the front of your mouth.
-- Syllable 2 (/.ɑːɹ/): Say the word "marr" (as in, "This is a non-marring mallet, as I do not want to mar the new flooring during installation?"). Pronounce the M, then make a wide, open throat sound like the "ah" sound you make at the doctor, smoothly blending into a standard English "R" sound (like at the end of car or far).
+- Syllable 2 (/.ɑːɹ/): Say the word "marr" (as in, "This is a non-marring mallet, as I do not want to mar the new flooring during installation."). Pronounce the M, then make a wide, open throat sound like the "ah" sound you make at the doctor, smoothly blending into a standard English "R" sound (like at the end of car or far).
 
 ## Executive Summary
 
