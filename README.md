@@ -12,12 +12,19 @@
   <br>
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
   <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/LangChain-⚡-green?style=for-the-badge" alt="LangChain Orchestration" />
+  <img src="https://img.shields.io/badge/LangChain-%E2%9A%A1-green?style=for-the-badge" alt="LangChain Orchestration" />
   <img src="https://img.shields.io/badge/LiteLLM-Proxy-blue?style=for-the-badge" alt="LiteLLM" />
   <img src="https://img.shields.io/badge/vLLM-Local_LLM-orange?style=for-the-badge" alt="vLLM" />
 </p>
 
 ---
+
+## Pronunciation Guide
+
+Ammare (or aMMare) is pronounced /ˈæm.ɑːɹ/
+
+- Syllable 1 (/ˈæm/): Say the word "am" (as in, "I am"). Make sure the "a" sound is flat and sharp, like the "a" in cat or trap. Drop your jaw slightly and push the sound from the front of your mouth.
+- Syllable 2 (/.ɑːɹ/): Say the word "marr" (as in, "This is a non-marring mallet, as I do not want to mar the new flooring during installation?"). Pronounce the M, then make a wide, open throat sound like the "ah" sound you make at the doctor, smoothly blending into a standard English "R" sound (like at the end of car or far).
 
 ## Executive Summary
 
@@ -51,13 +58,13 @@ The system is designed around a physical service-chain model. Requests flow from
 
 ### Component Responsibilities
 
-* **User Interface Layer:** The entry point (CLI, Web UI, or IDE integration) where developers submit requests and review execution logs, summaries, and diffs.
-* **OpenHands Workspace:** A containerized browser-based workspace functioning as a visual IDE for autonomous coding agent runs.
-* **LangChain Agent Middleware:** The stateful controller and execution boundary. It defines prompt templates, governs tool execution (reading/writing files, executing shell commands, running tests), validates model outputs, and determines escalation events.
-* **Headroom Proxy:** An inline proxy designed to compress context and optimize token payloads to reduce latency and downstream model costs.
-* **LiteLLM Proxy:** The single unified API gateway. It manages model endpoint routing, fallback paths, virtual keys, spend tracking, and quota policies.
-* **Local vLLM Model Endpoint:** Multi-GPU local inference runtime running open-source code models. Optimized for routine coding tasks and local privacy.
-* **Frontier Model Cloud API:** External API provider endpoint used for complex reasoning, final code reviews, and fallback routing.
+- **User Interface Layer:** The entry point (CLI, Web UI, or IDE integration) where developers submit requests and review execution logs, summaries, and diffs.
+- **OpenHands Workspace:** A containerized browser-based workspace functioning as a visual IDE for autonomous coding agent runs.
+- **LangChain Agent Middleware:** The stateful controller and execution boundary. It defines prompt templates, governs tool execution (reading/writing files, executing shell commands, running tests), validates model outputs, and determines escalation events.
+- **Headroom Proxy:** An inline proxy designed to compress context and optimize token payloads to reduce latency and downstream model costs.
+- **LiteLLM Proxy:** The single unified API gateway. It manages model endpoint routing, fallback paths, virtual keys, spend tracking, and quota policies.
+- **Local vLLM Model Endpoint:** Multi-GPU local inference runtime running open-source code models. Optimized for routine coding tasks and local privacy.
+- **Frontier Model Cloud API:** External API provider endpoint used for complex reasoning, final code reviews, and fallback routing.
 
 ---
 
@@ -65,30 +72,30 @@ The system is designed around a physical service-chain model. Requests flow from
 
 The project is structured around 13 distinct development phases:
 
-* **Phase Zero: Repository Scaffold and Baseline Standards**
-  * Initialize directory structure, config folders, styling guidelines, and pre-commit automation.
-* **Phase One: Local LLM Endpoint**
-  * Deploy vLLM local container, configure multi-GPU parallelisms for laboratory GPUs (e.g., dual NVIDIA RTX 3060s), and expose a logical model gateway.
-* **Phase Two: LangChain Middleware Layer**
-  * Deploy LangChain middleware container, define service interface, logging models, and health endpoints.
-* **Phase Three: Direct Local Model Workflow Validation**
-  * Validate direct LangChain to local LLM logic, confirming tool selection and observation feedback loops.
-* **Phase Four: LiteLLM Routing Layer**
-  * Introduce LiteLLM proxy to abstract model endpoint targets, adding virtual keys and usage logging.
-* **Phase Five: Cloud Model Provider Integration**
-  * Add cloud-hosted frontier model APIs to LiteLLM, configuring fallback routes and failover controls.
-* **Phase Six: Routing and Escalation Logic**
-  * Implement confidence and complexity-based routing rules to determine when tasks escalate from local to cloud.
-* **Phase Seven: Headroom Integration**
-  * Place Headroom inline as an optimization proxy, configuring bypass filters for structured payloads.
-* **Phase Eight: OpenHands Integration**
-  * Integrate containerized OpenHands workspace into the model service chain.
-* **Phase Nine: Memory, Context, and Retrieval**
-  * Implement session context management, runtime task state tracking, and local vector retrieval.
-* **Phase Ten: Full Service Chain Validation**
-  * End-to-level system testing: routing, tool safety, escalation, and context compression.
-* **Phase Eleven: One-Click Modular Deployment**
-  * Write top-level orchestrators and environment installers for easy local workspace spin-up.
-  * *Includes Docker Compose configurations and systemd service profiles.*
-* **Phase Twelve: Documentation, Hardening, and Release Packaging**
-  * Audit security boundaries, complete API documentation, package release bundles, and baseline configurations.
+- **Phase Zero: Repository Scaffold and Baseline Standards**
+  - Initialize directory structure, config folders, styling guidelines, and pre-commit automation.
+- **Phase One: Local LLM Endpoint**
+  - Deploy vLLM local container, configure multi-GPU parallelisms for laboratory GPUs (e.g., dual NVIDIA RTX 3060s), and expose a logical model gateway.
+- **Phase Two: LangChain Middleware Layer**
+  - Deploy LangChain middleware container, define service interface, logging models, and health endpoints.
+- **Phase Three: Direct Local Model Workflow Validation**
+  - Validate direct LangChain to local LLM logic, confirming tool selection and observation feedback loops.
+- **Phase Four: LiteLLM Routing Layer**
+  - Introduce LiteLLM proxy to abstract model endpoint targets, adding virtual keys and usage logging.
+- **Phase Five: Cloud Model Provider Integration**
+  - Add cloud-hosted frontier model APIs to LiteLLM, configuring fallback routes and failover controls.
+- **Phase Six: Routing and Escalation Logic**
+  - Implement confidence and complexity-based routing rules to determine when tasks escalate from local to cloud.
+- **Phase Seven: Headroom Integration**
+  - Place Headroom inline as an optimization proxy, configuring bypass filters for structured payloads.
+- **Phase Eight: OpenHands Integration**
+  - Integrate containerized OpenHands workspace into the model service chain.
+- **Phase Nine: Memory, Context, and Retrieval**
+  - Implement session context management, runtime task state tracking, and local vector retrieval.
+- **Phase Ten: Full Service Chain Validation**
+  - End-to-level system testing: routing, tool safety, escalation, and context compression.
+- **Phase Eleven: One-Click Modular Deployment**
+  - Write top-level orchestrators and environment installers for easy local workspace spin-up.
+  - *Includes Docker Compose configurations and systemd service profiles.*
+- **Phase Twelve: Documentation, Hardening, and Release Packaging**
+  - Audit security boundaries, complete API documentation, package release bundles, and baseline configurations.

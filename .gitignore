@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Environments and Secrets
+*.env
+!*.env.example
+
+# AI Coding Agents & LLM Tools
+.claude/
+.aider*
+.openhands/
+.agy/
+.gemini/
+.antigravity/
+.continue/
+.cursor/
+.supermaven/
+.codeium/
+.tabnine/
+.copilot/
+.chatgpt/
+.gpt/
+.langchain/
+.autogen/
+.crewai/
+
+# Editors & IDEs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*~
+
+# Operating System
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
