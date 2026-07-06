@@ -1,0 +1,12 @@
+# markdownlint configuration
+default: true
+
+# Line length - ignore so we don't have to break paragraphs at 80 characters
+MD013: false
+
+# Inline HTML - allow inline HTML for advanced formatting (e.g., details, centering)
+MD033: false
+
+# Multiple headers with the same content - allow if they are in different sections
+MD024:
+  allow_different_nesting: true
