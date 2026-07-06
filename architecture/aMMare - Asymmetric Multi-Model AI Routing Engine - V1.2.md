@@ -2,7 +2,9 @@
 
 ## *A Containerized Agentic AI Toolchain for Local Execution, Context Compression, Model Routing, and Frontier Validation leveraging [VLLM](https://vllm.ai/), [LiteLLM](https://www.litellm.ai/), and [Headroom](https://headroomlabs.ai/).*
 
-# **Pronunciation Guide** {#pronunciation-guide}
+<a id="pronunciation-guide"></a>
+
+# **Pronunciation Guide**
 
 Ammare (or aMMare) is pronounced /ˈæm.ɑːɹ/
 
@@ -10,7 +12,9 @@ Ammare (or aMMare) is pronounced /ˈæm.ɑːɹ/
 
 **Syllable 2 (/.ɑːɹ/):** Say the word "marr" (as in, "This is a non-marring mallet, as I do not want to mar the new flooring during installation?"). Pronounce the M, then make a wide, open throat sound like the "ah" sound you make at the doctor, smoothly blending into a standard English "R" sound (like at the end of car or far).
 
-# **Table of Contents** {#table-of-contents}
+<a id="table-of-contents"></a>
+
+# **Table of Contents**
 
 [Pronunciation Guide](#pronunciation-guide)
 
@@ -502,7 +506,9 @@ Ammare (or aMMare) is pronounced /ˈæm.ɑːɹ/
 
 [Summary](#summary-13)
 
-# **Executive Summary** {#executive-summary}
+<a id="executive-summary"></a>
+
+# **Executive Summary**
 
 The **Asymmetric Multi-Model AI Routing Engine, or aMMare**, is a containerized agentic AI toolchain designed to provide a practical, local-first development assistant that can use both local and cloud-hosted AI models through a controlled service chain.
 
@@ -543,7 +549,9 @@ The initial POC  of aMMare should focus on proving the core service chain with o
 
 In short, aMMare is being built to turn local and cloud language models into a controlled, agentic development toolchain. The system is intended to provide the practical functionality users expect from modern AI development assistants, while preserving local execution, cost control, model flexibility, and clear separation of responsibilities between the user interface, agent layer, proxy layers, and model endpoints.
 
-# **Global Traffic Architecture** {#global-traffic-architecture}
+<a id="global-traffic-architecture"></a>
+
+# **Global Traffic Architecture**
 
 The Global Traffic Architecture diagram represents the physical service chain for aMMare. Each box in the diagram represents a deployed service, container, or external API dependency. The diagram is not intended to show every internal process step inside the agent loop. Internal workflow details, such as tool validation, file writes, shell execution, retry behavior, and observation handling, are described in later sections.
 
@@ -551,7 +559,9 @@ See Diagram Below
 
 ![Global Traffic Architecture][image1]
 
-# **Agent Execution Flow** {#agent-execution-flow}
+<a id="agent-execution-flow"></a>
+
+# **Agent Execution Flow**
 
 The **Global Traffic Architecture section** describes the physical service chain. This section describes what happens inside that service chain when a user submits a request that requires agentic behavior.
 
@@ -616,7 +626,9 @@ The core service chain is composed of the following major components:
 
 The architecture should be understood as a group of cooperating services. The User Interface Layer receives requests and displays results. OpenHands provides a browser-based agent workspace. The LangChain Agent Middleware Layer owns the custom aMMare agent workflow and executes approved tools. Headroom optimizes context. LiteLLM routes and governs model traffic. vLLM provides local inference. Frontier model APIs provide fallback, validation, and high-complexity reasoning.
 
-## **User Interface Layer** {#user-interface-layer}
+<a id="user-interface-layer"></a>
+
+## **User Interface Layer**
 
 The User Interface Layer is the entry point where the user submits requests and reviews results.
 
@@ -642,7 +654,9 @@ OpenHands may have its own internal agent behavior. This means it should be docu
 
 For the first implementation, OpenHands should be deployed as a separate container and integrated into the model service chain. It should not replace the LangChain middleware path. Both can exist in the stack as different ways to interact with the model and agent infrastructure.
 
-## **Containerized LangChain Agent Middleware Layer** {#containerized-langchain-agent-middleware-layer}
+<a id="containerized-langchain-agent-middleware-layer"></a>
+
+## **Containerized LangChain Agent Middleware Layer**
 
 The Containerized LangChain Agent Middleware Layer is the primary orchestration component for the custom aMMare workflow.
 
@@ -720,7 +734,9 @@ LiteLLM should also issue separate virtual keys for different clients, such as L
 
 In short, LiteLLM is the control point for model access. It lets aMMare use local and cloud models through one managed interface while providing routing, fallback, cost control, and visibility.
 
-## **Containerized Local Model Endpoint using vLLM** {#containerized-local-model-endpoint-using-vllm}
+<a id="containerized-local-model-endpoint-using-vllm"></a>
+
+## **Containerized Local Model Endpoint using vLLM**
 
 The Containerized Local Model Endpoint using vLLM provides self-hosted model inference for aMMare.
 
@@ -738,7 +754,9 @@ The local model endpoint should be considered replaceable. If the first selected
 
 In summary, the Containerized Local Model Endpoint using vLLM provides the local inference capability for aMMare. It supports the local-first strategy, but it does not replace the agent layer. The model generates responses and instructions; LangChain performs approved local actions.
 
-## **Frontier Model Cloud API** {#frontier-model-cloud-api}
+<a id="frontier-model-cloud-api"></a>
+
+## **Frontier Model Cloud API**
 
 The Frontier Model Cloud API represents **one or more** external high-capability model providers.
 
@@ -750,7 +768,9 @@ The purpose of frontier models is not to replace the local-first strategy. Their
 
 This allows aMMare to use local inference for routine work while preserving access to stronger models when needed.
 
-## **Responsibility Boundary Summary** {#responsibility-boundary-summary}
+<a id="responsibility-boundary-summary"></a>
+
+## **Responsibility Boundary Summary**
 
 * The User Interface Layer accepts user requests and displays results.
 * The OpenHands Container provides a browser-based agent workspace and may act as a user-facing development environment.
@@ -762,7 +782,9 @@ This allows aMMare to use local inference for routine work while preserving acce
 
 This separation of responsibilities is essential to the aMMare design. It ensures that each service has a clear purpose and prevents confusion between interface, orchestration, context optimization, routing, inference, and tool execution.
 
-# **Tool Execution and Safety Model** {#tool-execution-and-safety-model}
+<a id="tool-execution-and-safety-model"></a>
+
+# **Tool Execution and Safety Model**
 
 The aMMare platform separates model reasoning from tool execution.
 
@@ -772,7 +794,9 @@ All tool execution is mediated by the Containerized LangChain Agent Middleware L
 
 The purpose of this design is to allow agentic workflows while preserving operational control, auditability, repeatability, and safety.
 
-## **Core Execution Principle** {#core-execution-principle}
+<a id="core-execution-principle"></a>
+
+## **Core Execution Principle**
 
 The model may suggest an action, but the middleware decides whether that action is allowed, how it is executed, and what result is returned.
 
@@ -785,7 +809,9 @@ This creates a clear separation of responsibility:
 
 This prevents the model from becoming an unrestricted shell, file editor, or automation engine.
 
-## **Tool Execution Boundary** {#tool-execution-boundary}
+<a id="tool-execution-boundary"></a>
+
+## **Tool Execution Boundary**
 
 The tool execution boundary is enforced inside the Containerized LangChain Agent Middleware Layer.
 
@@ -807,7 +833,9 @@ The model does not execute these operations directly. Instead, it emits a struct
 
 For example, the model may request to inspect a repository file, run a test command, or apply a patch. The middleware evaluates that request against the configured policy before performing the action.
 
-## **Approved Tool Registry** {#approved-tool-registry}
+<a id="approved-tool-registry"></a>
+
+## **Approved Tool Registry**
 
 The middleware maintains an approved tool registry.
 
@@ -841,7 +869,9 @@ Each tool should define:
 
 This registry prevents tool access from being implied or open-ended.
 
-## **Default Deny Model** {#default-deny-model}
+<a id="default-deny-model"></a>
+
+## **Default Deny Model**
 
 The tool execution model should follow a default deny approach.
 
@@ -864,7 +894,9 @@ Examples of rejected actions may include:
 
 This approach allows the system to support useful automation without granting unrestricted local authority.
 
-## **Human Approval Gates** {#human-approval-gates}
+<a id="human-approval-gates"></a>
+
+## **Human Approval Gates**
 
 Some actions should require explicit human approval before execution.
 
@@ -889,7 +921,9 @@ The middleware should pause the workflow and present the proposed action in a cl
 
 Approval should be action-specific. Approval for one action should not grant broad approval for future unrelated actions.
 
-## **Read-Only First Behavior** {#read-only-first-behavior}
+<a id="read-only-first-behavior"></a>
+
+## **Read-Only First Behavior**
 
 Agentic workflows should begin in read-only mode whenever possible.
 
@@ -909,7 +943,9 @@ A typical safe workflow should follow this pattern:
 
 This pattern is especially important when working with deployment scripts, container definitions, CI workflows, security settings, and infrastructure automation.
 
-## **Command Execution Controls** {#command-execution-controls}
+<a id="command-execution-controls"></a>
+
+## **Command Execution Controls**
 
 Shell command execution should be tightly constrained.
 
@@ -933,7 +969,9 @@ The middleware should treat shell access as one of the highest-risk tools in the
 
 Commands such as file listing, Git status, test execution, linting, and project-local validation may be allowed with low friction. Commands that modify system state, install software, alter permissions, or affect services should require explicit approval.
 
-## **File Access Controls** {#file-access-controls}
+<a id="file-access-controls"></a>
+
+## **File Access Controls**
 
 File access should be scoped to the approved workspace.
 
@@ -959,7 +997,9 @@ Write access should be more restrictive than read access. A file may be safe to 
 
 The middleware should also preserve file change visibility by generating diffs before and after modifications.
 
-## **Secret Handling** {#secret-handling}
+<a id="secret-handling"></a>
+
+## **Secret Handling**
 
 The model should not be given direct access to secrets.
 
@@ -977,7 +1017,9 @@ Secret handling should follow these principles:
 
 If a tool requires a credential, the tool should use that credential internally and return only the result required for the workflow.
 
-## **Network Access Controls** {#network-access-controls}
+<a id="network-access-controls"></a>
+
+## **Network Access Controls**
 
 Network access should be explicit and policy-controlled.
 
@@ -997,7 +1039,9 @@ Network policy should account for:
 
 This is important because network access can become an exfiltration path, a command-and-control path, or an unintended production-impact path.
 
-## **Tool Result Filtering** {#tool-result-filtering}
+<a id="tool-result-filtering"></a>
+
+## **Tool Result Filtering**
 
 Tool output should be filtered before it is returned to the model.
 
@@ -1016,7 +1060,9 @@ Filtering may include:
 
 This reduces context noise and helps prevent sensitive information from being pulled into the model session.
 
-## **Audit Logging** {#audit-logging}
+<a id="audit-logging"></a>
+
+## **Audit Logging**
 
 All tool activity should be logged.
 
@@ -1042,7 +1088,9 @@ Audit logs should not store raw secrets.
 
 The audit trail is important for troubleshooting, security review, reproducibility, and understanding how a generated change was produced.
 
-## **Failure Handling** {#failure-handling}
+<a id="failure-handling"></a>
+
+## **Failure Handling**
 
 Tool execution failures should be handled explicitly.
 
@@ -1066,7 +1114,9 @@ For repeated failures, the middleware should be able to stop the workflow and as
 
 This prevents runaway loops where the model repeatedly retries commands or makes increasingly broad changes to resolve an issue.
 
-## **Change Validation** {#change-validation}
+<a id="change-validation"></a>
+
+## **Change Validation**
 
 State-changing actions should be followed by validation.
 
@@ -1091,7 +1141,9 @@ The validation result should be returned to the model and included in the final 
 
 If validation fails, the model may propose a corrective change, but the correction should follow the same tool execution and approval rules as the original change.
 
-## **Git and Change Control** {#git-and-change-control}
+<a id="git-and-change-control"></a>
+
+## **Git and Change Control**
 
 Git operations should be handled carefully.
 
@@ -1112,7 +1164,9 @@ A safe Git workflow should include:
 
 This ensures that the user remains in control of repository history and remote publication.
 
-## **Container Isolation** {#container-isolation}
+<a id="container-isolation"></a>
+
+## **Container Isolation**
 
 The middleware and tool execution services should run inside containers.
 
@@ -1136,7 +1190,9 @@ Recommended controls include:
 
 Container isolation is not a complete security boundary by itself, but it reduces the blast radius of tool execution.
 
-## **Privilege Separation** {#privilege-separation}
+<a id="privilege-separation"></a>
+
+## **Privilege Separation**
 
 The platform should separate privileged operations from normal agentic operations.
 
@@ -1146,7 +1202,9 @@ For example, a normal file inspection tool should not have the same authority as
 
 This separation allows the platform to grant the minimum authority required for each action.
 
-## **Policy Configuration** {#policy-configuration}
+<a id="policy-configuration"></a>
+
+## **Policy Configuration**
 
 Tool policy should be configurable rather than hardcoded into model prompts.
 
@@ -1172,7 +1230,9 @@ This allows different deployments of aMMare to use different safety profiles.
 
 For example, a personal homelab deployment may allow broader local file access inside a project directory, while a shared enterprise deployment may require stricter approval gates, tighter network policy, and more detailed audit logging.
 
-## **Safety Profile Modes** {#safety-profile-modes}
+<a id="safety-profile-modes"></a>
+
+## **Safety Profile Modes**
 
 The platform may support multiple safety profile modes.
 
@@ -1191,7 +1251,9 @@ Read-only mode may allow file inspection and summarization only. Local developme
 
 These modes make the platform adaptable without changing the core architecture.
 
-## **Final Response Requirements** {#final-response-requirements}
+<a id="final-response-requirements"></a>
+
+## **Final Response Requirements**
 
 At the end of a workflow, the middleware should require the model to produce a clear final summary.
 
@@ -1208,7 +1270,9 @@ The final response should identify:
 
 This ensures that the user receives an operationally useful result rather than a vague statement that the task is complete.
 
-## **Summary** {#summary}
+<a id="summary"></a>
+
+## **Summary**
 
 The aMMare tool execution and safety model is based on controlled delegation.
 
@@ -1216,7 +1280,9 @@ The model provides reasoning and intent, but the middleware owns execution contr
 
 This design allows aMMare to support practical agentic workflows while maintaining clear boundaries around safety, accountability, and operational control.
 
-# **Model Routing and Escalation Strategy** {#model-routing-and-escalation-strategy}
+<a id="model-routing-and-escalation-strategy"></a>
+
+# **Model Routing and Escalation Strategy**
 
 The aMMare platform uses an asymmetric model-routing strategy.
 
@@ -1224,7 +1290,9 @@ Not every request should be sent to the same model. Different tasks require diff
 
 This allows the platform to use smaller or local models for routine work while escalating complex, ambiguous, or high-risk work to stronger models when needed.
 
-## **Routing Objective** {#routing-objective}
+<a id="routing-objective"></a>
+
+## **Routing Objective**
 
 The goal of model routing is to match each task to the most appropriate model tier.
 
@@ -1244,7 +1312,9 @@ The router should consider:
 
 This prevents the platform from overusing expensive or remote models while also avoiding weak responses for tasks that require stronger reasoning.
 
-## **Asymmetric Model Design** {#asymmetric-model-design}
+<a id="asymmetric-model-design"></a>
+
+## **Asymmetric Model Design**
 
 The aMMare architecture assumes that different models have different roles.
 
@@ -1277,7 +1347,9 @@ A larger or remote model may be better suited for:
 
 This approach allows the platform to use each model where it is strongest.
 
-## **Primary Routing Layer** {#primary-routing-layer}
+<a id="primary-routing-layer"></a>
+
+## **Primary Routing Layer**
 
 The primary routing layer receives the user request and determines the initial model path.
 
@@ -1299,7 +1371,9 @@ Example routing inputs include:
 
 The router should return a structured routing decision rather than relying on informal prompt behavior alone.
 
-## **Example Model Tiers** {#example-model-tiers}
+<a id="example-model-tiers"></a>
+
+## **Example Model Tiers**
 
 The platform may define model tiers rather than binding the architecture to specific model names.
 
@@ -1319,7 +1393,9 @@ The actual model assigned to each tier can change over time as models improve or
 
 This keeps the architecture flexible and avoids hard-coding aMMare to one model vendor, one local runtime, or one API provider.
 
-## **Local-First Routing** {#local-first-routing}
+<a id="local-first-routing"></a>
+
+## **Local-First Routing**
 
 The default routing strategy should prefer local models when they are sufficient for the task.
 
@@ -1336,7 +1412,9 @@ However, local-first does not mean local-only.
 
 If the local model is unlikely to complete the task safely or accurately, the workflow should escalate to a stronger model tier.
 
-## **Escalation Triggers** {#escalation-triggers}
+<a id="escalation-triggers"></a>
+
+## **Escalation Triggers**
 
 Escalation should occur when the platform detects that the current model tier is insufficient for the task.
 
@@ -1361,7 +1439,9 @@ Escalation may also be requested by the model itself, but the middleware should 
 
 The model should not be trusted as the sole authority on whether it needs escalation.
 
-## **Confidence-Based Escalation** {#confidence-based-escalation}
+<a id="confidence-based-escalation"></a>
+
+## **Confidence-Based Escalation**
 
 The router should support confidence-based escalation.
 
@@ -1381,7 +1461,9 @@ When confidence is low, the middleware may reroute the task to a stronger model 
 
 Confidence should be based on observable signals where possible, not only on the model’s self-reported confidence.
 
-## **Tool-Aware Routing** {#tool-aware-routing}
+<a id="tool-aware-routing"></a>
+
+## **Tool-Aware Routing**
 
 Routing should account for the tools required by the task.
 
@@ -1393,7 +1475,9 @@ Model routing should not bypass tool safety policy.
 
 A stronger model may produce a better plan, but it should still operate through the same approval gates, file restrictions, network restrictions, and audit logging controls.
 
-## **State-Aware Routing** {#state-aware-routing}
+<a id="state-aware-routing"></a>
+
+## **State-Aware Routing**
 
 The router should consider the current workflow state.
 
@@ -1410,7 +1494,9 @@ Examples include:
 
 Routing should therefore be available throughout the workflow, not only at the first prompt.
 
-## **Task Classification** {#task-classification}
+<a id="task-classification"></a>
+
+## **Task Classification**
 
 The router should classify tasks before selecting a model.
 
@@ -1437,7 +1523,9 @@ Each task class can map to a preferred model tier, tool profile, and escalation 
 
 For example, simple summarization may use a local lightweight model. Repository-wide code modification may start with a local coding model but require escalation to a stronger reasoning model if validation fails.
 
-## **Risk-Based Routing** {#risk-based-routing}
+<a id="risk-based-routing"></a>
+
+## **Risk-Based Routing**
 
 The routing strategy should account for operational risk.
 
@@ -1468,7 +1556,9 @@ For high-risk tasks, the platform may require:
 
 This ensures that routing decisions account for consequences, not only prompt complexity.
 
-## **Cost and Latency Controls** {#cost-and-latency-controls}
+<a id="cost-and-latency-controls"></a>
+
+## **Cost and Latency Controls**
 
 Routing should balance answer quality with cost and latency.
 
@@ -1488,7 +1578,9 @@ Cost and latency controls may include:
 
 The purpose is not to minimize cost at all times. The purpose is to spend cost where it improves correctness, safety, or user value.
 
-## **Context Preparation Before Escalation** {#context-preparation-before-escalation}
+<a id="context-preparation-before-escalation"></a>
+
+## **Context Preparation Before Escalation**
 
 Before escalating to a stronger model, the middleware should prepare a compact context package.
 
@@ -1511,7 +1603,9 @@ The context package may include:
 
 This keeps escalation efficient and reduces the chance of leaking irrelevant or sensitive information.
 
-## **De-Escalation** {#de-escalation}
+<a id="de-escalation"></a>
+
+## **De-Escalation**
 
 The router should also support de-escalation.
 
@@ -1528,7 +1622,9 @@ Examples of de-escalation include:
 
 De-escalation helps preserve resources while keeping high-reasoning models focused on the parts of the workflow where they are most useful.
 
-## **Multi-Model Review** {#multi-model-review}
+<a id="multi-model-review"></a>
+
+## **Multi-Model Review**
 
 For certain workflows, aMMare may use more than one model to review the same output.
 
@@ -1546,7 +1642,9 @@ One model may generate a plan or patch, while another model reviews it for corre
 
 The middleware should treat multi-model review as an advisory process. Final execution authority remains with the middleware and the user approval process.
 
-## **Fallback Behavior** {#fallback-behavior}
+<a id="fallback-behavior"></a>
+
+## **Fallback Behavior**
 
 The routing layer should define fallback behavior when a model is unavailable.
 
@@ -1573,7 +1671,9 @@ Fallback options may include:
 
 Fallback behavior should be predictable and logged.
 
-## **Routing Decision Logging** {#routing-decision-logging}
+<a id="routing-decision-logging"></a>
+
+## **Routing Decision Logging**
 
 Every routing decision should be logged.
 
@@ -1595,7 +1695,9 @@ Routing logs should capture:
 
 These logs help tune the router over time and explain why a specific model was used for a specific task.
 
-## **Policy-Driven Routing** {#policy-driven-routing}
+<a id="policy-driven-routing"></a>
+
+## **Policy-Driven Routing**
 
 Routing should be controlled by policy, not only by prompt instructions.
 
@@ -1613,7 +1715,9 @@ A routing policy may define:
 
 This makes routing behavior consistent, auditable, and adjustable without rewriting the whole application.
 
-## **Example Routing Flow** {#example-routing-flow}
+<a id="example-routing-flow"></a>
+
+## **Example Routing Flow**
 
 A typical routing flow may work as follows:
 
@@ -1631,7 +1735,9 @@ A typical routing flow may work as follows:
 
 This flow allows aMMare to adapt during the task instead of making a single static model choice at the beginning.
 
-## **Summary** {#summary-1}
+<a id="summary-1"></a>
+
+## **Summary**
 
 The aMMare model-routing strategy is based on asymmetric use of model capabilities.
 
@@ -1639,7 +1745,9 @@ Smaller and local models handle routine, low-risk, and repetitive work. Stronger
 
 Escalation and de-escalation allow the system to adapt as the workflow develops. The middleware remains responsible for policy enforcement, tool safety, logging, and final execution control regardless of which model is selected.
 
-# **Development and Deployment Roadmap** {#development-and-deployment-roadmap}
+<a id="development-and-deployment-roadmap"></a>
+
+# **Development and Deployment Roadmap**
 
 The aMMare platform should be developed and deployed in controlled phases.
 
@@ -1649,7 +1757,9 @@ The roadmap should be treated as both a development plan and a deployment plan. 
 
 The coding agent should not attempt to build the entire platform in one pass.
 
-## **Roadmap Principles** {#roadmap-principles}
+<a id="roadmap-principles"></a>
+
+## **Roadmap Principles**
 
 The development process should follow these principles:
 
@@ -1667,7 +1777,9 @@ The development process should follow these principles:
 
 The goal is not only to reach the final architecture. The goal is to create a system that remains understandable and maintainable while it grows.
 
-## **Phase Zero: Repository Scaffold and Baseline Standards** {#phase-zero:-repository-scaffold-and-baseline-standards}
+<a id="phase-zero:-repository-scaffold-and-baseline-standards"></a>
+
+## **Phase Zero: Repository Scaffold and Baseline Standards**
 
 The first phase establishes the project structure, standards, and baseline automation.
 
@@ -1704,7 +1816,9 @@ Expected validation:
 * No secrets are committed.
 * Git status is clean after generated files are reviewed.
 
-## **Phase One: Local LLM Endpoint** {#phase-one:-local-llm-endpoint}
+<a id="phase-one:-local-llm-endpoint"></a>
+
+## **Phase One: Local LLM Endpoint**
 
 This phase deploys the first local model endpoint. The agent can use the following repo as reference \- [https://github.com/christopherpaquin/vllm-local-developer-stack](https://github.com/christopherpaquin/vllm-local-developer-stack)
 
@@ -1775,7 +1889,9 @@ Expected validation:
 * Logs show no fatal startup errors.
 * Validation script returns success.
 
-## **Phase Two: LangChain Middleware Layer** {#phase-two:-langchain-middleware-layer}
+<a id="phase-two:-langchain-middleware-layer"></a>
+
+## **Phase Two: LangChain Middleware Layer**
 
 This phase introduces the **LangChain** middleware service.
 
@@ -1809,7 +1925,9 @@ Expected validation:
 * Logs identify the model endpoint being used.
 * Validation script confirms LangChain-to-model path.
 
-## **Phase Three: Direct Local Model Workflow Validation** {#phase-three:-direct-local-model-workflow-validation}
+<a id="phase-three:-direct-local-model-workflow-validation"></a>
+
+## **Phase Three: Direct Local Model Workflow Validation**
 
 This phase validates the simplest useful service chain.
 
@@ -1842,7 +1960,9 @@ Expected validation:
 
 This phase establishes the minimum viable aMMare service path.
 
-## **Phase Four: LiteLLM Routing Layer** {#phase-four:-litellm-routing-layer}
+<a id="phase-four:-litellm-routing-layer"></a>
+
+## **Phase Four: LiteLLM Routing Layer**
 
 This phase introduces LiteLLM as the model routing layer.
 
@@ -1878,7 +1998,9 @@ Expected validation:
 * Direct local model access can be tested independently.
 * Service chain validation confirms the new path.
 
-## **Phase Five: Cloud Model Provider Integration** {#phase-five:-cloud-model-provider-integration}
+<a id="phase-five:-cloud-model-provider-integration"></a>
+
+## **Phase Five: Cloud Model Provider Integration**
 
 This phase adds the first cloud model provider behind LiteLLM.
 
@@ -1911,7 +2033,9 @@ Expected validation:
 
 This phase should not yet attempt advanced automated escalation. It should first prove that multiple backends are reachable and selectable.
 
-## **Phase Six: Routing and Escalation Logic** {#phase-six:-routing-and-escalation-logic}
+<a id="phase-six:-routing-and-escalation-logic"></a>
+
+## **Phase Six: Routing and Escalation Logic**
 
 This phase implements the model routing and escalation strategy.
 
@@ -1941,7 +2065,9 @@ Expected validation:
 * Routing policy can be modified without rewriting core code.
 * Validation scripts show which model handled the request.
 
-## **Phase Seven: Headroom Integration** {#phase-seven:-headroom-integration}
+<a id="phase-seven:-headroom-integration"></a>
+
+## **Phase Seven: Headroom Integration**
 
 This phase introduces Headroom into the service chain.
 
@@ -1980,7 +2106,9 @@ Expected validation:
 
 This phase should be treated as a controlled service-chain rewiring event.
 
-## **Phase Eight: OpenHands Integration** {#phase-eight:-openhands-integration}
+<a id="phase-eight:-openhands-integration"></a>
+
+## **Phase Eight: OpenHands Integration**
 
 This phase introduces OpenHands or a similar coding-agent workspace component.
 
@@ -2012,7 +2140,9 @@ Expected validation:
 
 This phase should remain conservative. OpenHands should not receive broad host access simply because it is useful for coding tasks.
 
-## **Phase Nine: Memory, Context, and Retrieval** {#phase-nine:-memory,-context,-and-retrieval}
+<a id="phase-nine:-memory,-context,-and-retrieval"></a>
+
+## **Phase Nine: Memory, Context, and Retrieval**
 
 This phase introduces persistent memory, document retrieval, or context indexing.
 
@@ -2046,7 +2176,9 @@ Expected validation:
 
 Memory should be optional during initial deployment.
 
-## **Phase Ten: Full Service Chain Validation** {#phase-ten:-full-service-chain-validation}
+<a id="phase-ten:-full-service-chain-validation"></a>
+
+## **Phase Ten: Full Service Chain Validation**
 
 This phase validates the complete intended service path.
 
@@ -2086,7 +2218,9 @@ Expected validation:
 
 This phase should make it easy to determine whether the system is healthy without manually inspecting every container.
 
-## **Phase Eleven: One-Click Modular Deployment** {#phase-eleven:-one-click-modular-deployment}
+<a id="phase-eleven:-one-click-modular-deployment"></a>
+
+## **Phase Eleven: One-Click Modular Deployment**
 
 This phase consolidates earlier deploy scripts into a top-level one-click deployment process.
 
@@ -2126,7 +2260,9 @@ Expected validation:
 
 The top-level script should preserve modularity.
 
-## **Phase Twelve: Documentation, Hardening, and Release Packaging** {#phase-twelve:-documentation,-hardening,-and-release-packaging}
+<a id="phase-twelve:-documentation,-hardening,-and-release-packaging"></a>
+
+## **Phase Twelve: Documentation, Hardening, and Release Packaging**
 
 This phase prepares the project for repeatable use.
 
@@ -2170,7 +2306,9 @@ This phased approach provides a clear path to the final architecture while reduc
 
 Detailed implementation expectations for the coding agent, including work patterns, configuration rules, validation requirements, and stop conditions, are defined in the Coding Agent Implementation Guide chapter later in this document.
 
-# **Target Service Topology** {#target-service-topology}
+<a id="target-service-topology"></a>
+
+# **Target Service Topology**
 
 The aMMare platform should define the intended service topology before all components are implemented.
 
@@ -2178,7 +2316,9 @@ The initial deployment may start with only a local model endpoint and LangChain 
 
 The topology described in this section should be treated as the intended end state. Individual deployment phases may enable only a subset of these services.
 
-## **Topology Principles** {#topology-principles}
+<a id="topology-principles"></a>
+
+## **Topology Principles**
 
 The service topology should follow these principles:
 
@@ -2199,7 +2339,9 @@ The service topology should follow these principles:
 
 The topology should support both a minimal local deployment and a more complete multi-service deployment.
 
-## **Target Service Chain** {#target-service-chain}
+<a id="target-service-chain"></a>
+
+## **Target Service Chain**
 
 The final intended service chain may include the following path:
 
@@ -2235,7 +2377,9 @@ A full deployment may use:
 
 The topology should allow these modes without requiring major application rewrites.
 
-## **Logical Endpoint Strategy** {#logical-endpoint-strategy}
+<a id="logical-endpoint-strategy"></a>
+
+## **Logical Endpoint Strategy**
 
 Services should communicate through configurable logical endpoints.
 
@@ -2257,7 +2401,9 @@ In an early deployment, this endpoint may point directly to the local LLM servic
 
 This allows the backend service chain to change while preserving the same application-level configuration pattern.
 
-## **Proposed Service Inventory** {#proposed-service-inventory}
+<a id="proposed-service-inventory"></a>
+
+## **Proposed Service Inventory**
 
 The following service inventory describes the intended full topology.
 
@@ -2276,7 +2422,9 @@ Ports marked **TBD** should be finalized during implementation and then updated 
 
 The coding agent should not invent hidden service names or undocumented ports. If a new service or port is required, it should update this topology section and the related documentation.
 
-## **Required Initial Services** {#required-initial-services}
+<a id="required-initial-services"></a>
+
+## **Required Initial Services**
 
 The minimum viable deployment should include:
 
@@ -2292,7 +2440,9 @@ This initial topology is intentionally simple. It validates that the middleware 
 
 The initial deployment should still use a logical model gateway variable so the backend target can be changed later.
 
-## **Optional Services** {#optional-services}
+<a id="optional-services"></a>
+
+## **Optional Services**
 
 Optional services should be enabled through deployment configuration.
 
@@ -2312,7 +2462,9 @@ Optional services should not be required for the minimal local deployment.
 
 If an optional service is disabled, dependent services should either bypass it cleanly or fail with a clear configuration error.
 
-## **Service Naming Standard** {#service-naming-standard}
+<a id="service-naming-standard"></a>
+
+## **Service Naming Standard**
 
 Service names should be predictable and consistent.
 
@@ -2335,7 +2487,9 @@ Example:
 | ammare-local-llm-primaryammare-local-llm-secondaryammare-embedding-smallammare-embedding-large |
 | :---- |
 
-## **Port Management** {#port-management}
+<a id="port-management"></a>
+
+## **Port Management**
 
 All service ports should be documented.
 
@@ -2367,7 +2521,9 @@ For local lab deployments, it is acceptable for services to bind to local lab IP
 
 The coding agent should avoid randomly selecting ports during implementation. New ports should be added deliberately and documented.
 
-## **Network Model** {#network-model}
+<a id="network-model"></a>
+
+## **Network Model**
 
 The platform should support a local lab network model.
 
@@ -2385,7 +2541,9 @@ Supported network patterns may include:
 
 Cloud model providers may require outbound internet access, but inbound public access should not be required for the core local platform.
 
-## **Shared Configuration Paths** {#shared-configuration-paths}
+<a id="shared-configuration-paths"></a>
+
+## **Shared Configuration Paths**
 
 The deployment should use predictable configuration paths.
 
@@ -2415,7 +2573,9 @@ Note: All env files need to be well documented with inline comments explaining t
 
 Environment files are not hidden files. Actual environment files use the plain \<component\>.env naming convention and are excluded from version control through .gitignore, while the corresponding \<component\>.env.example templates are committed to the repository.
 
-## **Shared Runtime Paths** {#shared-runtime-paths}
+<a id="shared-runtime-paths"></a>
+
+## **Shared Runtime Paths**
 
 Runtime data should be separated from static configuration.
 
@@ -2428,7 +2588,9 @@ These paths should be documented so users know what persists across restarts and
 
 The coding agent should not scatter persistent data into undocumented directories.
 
-## **Environment Variable Standards** {#environment-variable-standards}
+<a id="environment-variable-standards"></a>
+
+## **Environment Variable Standards**
 
 Environment variables should use a consistent prefix.
 
@@ -2455,7 +2617,9 @@ The coding agent should prefer clear environment variables over hardcoded values
 
 All variables above should be created with a default value. End users can modify as needed.
 
-## **Startup Order** {#startup-order}
+<a id="startup-order"></a>
+
+## **Startup Order**
 
 The deployment should start services in dependency order.
 
@@ -2476,7 +2640,9 @@ For example:
 * OpenHands should validate that its workspace path exists.
 * Memory services should validate that the vector database is available.
 
-## **Independent Troubleshooting Paths** {#independent-troubleshooting-paths}
+<a id="independent-troubleshooting-paths"></a>
+
+## **Independent Troubleshooting Paths**
 
 Each service should be independently testable.
 
@@ -2494,7 +2660,9 @@ The platform should provide scripts that can validate:
 
 This is important because the final chain may contain several layers. A failure in the full chain should be isolated quickly to the failing component.
 
-## **Health Check Standard** {#health-check-standard}
+<a id="health-check-standard"></a>
+
+## **Health Check Standard**
 
 Each service should provide or expose a health check.
 
@@ -2513,7 +2681,9 @@ Recommended health-check categories:
 
 The full validation script should combine these individual checks into a service-chain health report.
 
-## **Logging Standard** {#logging-standard}
+<a id="logging-standard"></a>
+
+## **Logging Standard**
 
 Each service should write logs in a predictable way.
 
@@ -2531,7 +2701,9 @@ Recommended logging expectations:
 
 The troubleshooting documentation should explain where to find logs for each service.
 
-## **Deployment Profiles** {#deployment-profiles}
+<a id="deployment-profiles"></a>
+
+## **Deployment Profiles**
 
 The topology should support deployment profiles.
 
@@ -2554,7 +2726,9 @@ Example:
 
 The deployment profile should be selected through configuration or a deployment flag.
 
-## **Topology Update Requirement** {#topology-update-requirement}
+<a id="topology-update-requirement"></a>
+
+## **Topology Update Requirement**
 
 This topology section should be updated whenever a service is added, removed, renamed, or rewired.
 
@@ -2573,7 +2747,9 @@ Changes that require topology updates include:
 
 The coding agent should treat this section as a source of architectural truth. If implementation requires a topology change, the document should be updated in the same phase as the code change.
 
-## **Summary** {#summary-2}
+<a id="summary-2"></a>
+
+## **Summary**
 
 The aMMare target service topology defines the intended full deployment while still supporting phased implementation.
 
@@ -2581,7 +2757,9 @@ The initial system may start with only LangChain and a local LLM endpoint. Later
 
 The key design requirement is that service relationships remain configurable. IP addresses are acceptable for the local lab deployment, but service targets should still be expressed through logical configuration variables so the request path can evolve without rewriting core application logic.
 
-# **Component Configuration Model** {#component-configuration-model}
+<a id="component-configuration-model"></a>
+
+# **Component Configuration Model**
 
 The aMMare platform should use a predictable and centralized configuration model.
 
@@ -2589,7 +2767,9 @@ Configuration should be externalized wherever practical so services can be added
 
 The goal is to keep configuration clear, portable, and easy for both users and coding agents to modify safely.
 
-## **Configuration Principles** {#configuration-principles}
+<a id="configuration-principles"></a>
+
+## **Configuration Principles**
 
 Configuration should follow these principles:
 
@@ -2603,7 +2783,9 @@ Configuration should follow these principles:
 * Document which files control each service.
 * Use stable variable names even if the underlying service chain changes.
 
-## **Configuration Layout** {#configuration-layout}
+<a id="configuration-layout"></a>
+
+## **Configuration Layout**
 
 The repository should separate global configuration, component configuration, examples, and runtime data.
 
@@ -2621,7 +2803,9 @@ The **config/** directory should contain structured configuration files used by 
 
 Actual local environment files may be created from the examples but should not be committed if they contain host-specific values or secrets.
 
-## **Global Configuration** {#global-configuration}
+<a id="global-configuration"></a>
+
+## **Global Configuration**
 
 Global configuration should define settings shared across the deployment.
 
@@ -2634,7 +2818,9 @@ Global configuration should describe the active deployment profile and which opt
 
 Component scripts should read these values rather than making independent assumptions about paths, profiles, or enabled services.
 
-## **Component Configuration** {#component-configuration}
+<a id="component-configuration"></a>
+
+## **Component Configuration**
 
 Each component should have its own configuration file or environment file.
 
@@ -2667,7 +2853,9 @@ Each component configuration should define only the values required for that com
 
 The coding agent should not duplicate the same setting across multiple files unless there is a clear reason.
 
-## **Logical Endpoint Configuration** {#logical-endpoint-configuration}
+<a id="logical-endpoint-configuration"></a>
+
+## **Logical Endpoint Configuration**
 
 Service-to-service communication should use logical endpoint variables.
 
@@ -2687,7 +2875,9 @@ The value can change between phases, but LangChain should continue reading the s
 
 This allows the service chain to evolve without rewriting LangChain application logic.
 
-## **Model Endpoint Registry** {#model-endpoint-registry}
+<a id="model-endpoint-registry"></a>
+
+## **Model Endpoint Registry**
 
 Model endpoints should be defined in a structured registry.
 
@@ -2705,7 +2895,9 @@ Example structure:
 
 The registry should store model metadata and endpoint definitions, but it should not store raw API keys.
 
-## **Routing Configuration** {#routing-configuration}
+<a id="routing-configuration"></a>
+
+## **Routing Configuration**
 
 Routing rules should be stored separately from application code where practical.
 
@@ -2731,7 +2923,9 @@ Example structure:
 
 The routing file should be simple at first and expanded only as routing behavior becomes more advanced.
 
-## **Secrets Handling** {#secrets-handling}
+<a id="secrets-handling"></a>
+
+## **Secrets Handling**
 
 Secrets should be kept separate from committed configuration.
 
@@ -2760,7 +2954,9 @@ Secret files should be excluded from version control.
 
 Application logs, validation scripts, and error messages should not print secret values.
 
-## **Configuration Validation** {#configuration-validation}
+<a id="configuration-validation"></a>
+
+## **Configuration Validation**
 
 The project should include configuration validation scripts.
 
@@ -2783,7 +2979,9 @@ This script should check:
 
 Configuration validation should run before deployment and as part of the full service validation process.
 
-## **Configuration Ownership** {#configuration-ownership}
+<a id="configuration-ownership"></a>
+
+## **Configuration Ownership**
 
 Each configuration file should have a clear purpose.
 
@@ -2800,13 +2998,17 @@ Each configuration file should have a clear purpose.
 
 The coding agent should update the correct file rather than creating new configuration locations without reason.
 
-## **Summary** {#summary-3}
+<a id="summary-3"></a>
+
+## **Summary**
 
 The aMMare configuration model should keep deployment-specific values, component settings, model definitions, routing rules, and secrets clearly separated.
 
 The most important rule is that service relationships must remain configurable. Local IP addresses are acceptable for the lab deployment, but they should still be assigned through environment variables or structured config files rather than hardcoded into application logic.
 
-# **Service Chaining and Rewiring Strategy** {#service-chaining-and-rewiring-strategy}
+<a id="service-chaining-and-rewiring-strategy"></a>
+
+# **Service Chaining and Rewiring Strategy**
 
 The aMMare service chain will evolve over multiple phases.
 
@@ -2814,7 +3016,9 @@ Early deployments may connect LangChain directly to a local model endpoint. Late
 
 The goal is to make service chaining intentional, configurable, and testable.
 
-## **Chaining Principle** {#chaining-principle}
+<a id="chaining-principle"></a>
+
+## **Chaining Principle**
 
 Each service should connect to the next layer through configuration, not hardcoded application logic.
 
@@ -2842,7 +3046,9 @@ to:
 
 Each transition should be handled by configuration changes and validation scripts whenever practical.
 
-## **Logical Gateway Pattern** {#logical-gateway-pattern}
+<a id="logical-gateway-pattern"></a>
+
+## **Logical Gateway Pattern**
 
 LangChain should use a logical model gateway endpoint.
 
@@ -2862,7 +3068,9 @@ The value may be a local IP address, local DNS name, container service name, or 
 
 The important requirement is that LangChain reads this value from configuration and does not hardcode a specific backend.
 
-## **Phase-Based Chain Evolution** {#phase-based-chain-evolution}
+<a id="phase-based-chain-evolution"></a>
+
+## **Phase-Based Chain Evolution**
 
 The service chain should change only after the current chain is validated.
 
@@ -2899,7 +3107,9 @@ The coding agent should not add multiple new chain layers in the same step unles
 
 Each phase should include service-specific validation and full-chain validation before moving forward.
 
-## **Rewiring Events** {#rewiring-events}
+<a id="rewiring-events"></a>
+
+## **Rewiring Events**
 
 A rewiring event occurs when one service is inserted, removed, bypassed, or replaced in the request path.
 
@@ -2915,7 +3125,9 @@ Examples:
 
 Rewiring should be treated as an intentional change. It should update configuration, documentation, and validation scripts in the same phase.
 
-## **Rewiring Requirements** {#rewiring-requirements}
+<a id="rewiring-requirements"></a>
+
+## **Rewiring Requirements**
 
 Each rewiring event should include:
 
@@ -2930,7 +3142,9 @@ Each rewiring event should include:
 
 The coding agent should not silently change service paths without updating the related documentation.
 
-## **Bypass Paths** {#bypass-paths}
+<a id="bypass-paths"></a>
+
+## **Bypass Paths**
 
 The architecture should support bypass paths for troubleshooting.
 
@@ -2960,7 +3174,9 @@ Example scripts:
 | scripts/test-local-llm.shscripts/test-litellm-local.shscripts/test-litellm-cloud.shscripts/test-headroom.shscripts/test-langchain-gateway.shscripts/test-full-chain.sh |
 | :---- |
 
-## **Deployment Profiles** {#deployment-profiles-1}
+<a id="deployment-profiles-1"></a>
+
+## **Deployment Profiles**
 
 Deployment profiles should define which chain is active.
 
@@ -2982,7 +3198,9 @@ Each profile should explicitly define:
 
 A deployment profile should make the active chain obvious without requiring users to inspect multiple files.
 
-## **Avoiding Early Hardcoding** {#avoiding-early-hardcoding}
+<a id="avoiding-early-hardcoding"></a>
+
+## **Avoiding Early Hardcoding**
 
 The initial implementation should avoid shortcuts that make later rewiring difficult.
 
@@ -3001,7 +3219,9 @@ The coding agent should avoid:
 
 Temporary direct connections are acceptable during early phases, but they must still be expressed through configuration.
 
-## **Service Contract Expectations** {#service-contract-expectations}
+<a id="service-contract-expectations"></a>
+
+## **Service Contract Expectations**
 
 Each service boundary should have a basic contract.
 
@@ -3021,7 +3241,9 @@ This helps prevent later components from depending on unclear or accidental beha
 
 For example, LangChain should know only that it has a configured model gateway. It should not need to know whether that gateway is the local model endpoint, LiteLLM, or Headroom.
 
-## **Configuration-Driven Chain Selection** {#configuration-driven-chain-selection}
+<a id="configuration-driven-chain-selection"></a>
+
+## **Configuration-Driven Chain Selection**
 
 The active service chain should be selected by configuration.
 
@@ -3034,7 +3256,9 @@ The top-level deployment script should read these values and deploy only the sel
 
 Validation scripts should also read the active profile so they test the correct chain.
 
-## **Validation After Rewiring** {#validation-after-rewiring}
+<a id="validation-after-rewiring"></a>
+
+## **Validation After Rewiring**
 
 Every service-chain change should be validated.
 
@@ -3051,7 +3275,9 @@ Validation should include:
 
 The validation result should identify where the chain fails if a test does not pass.
 
-## **Failure Isolation** {#failure-isolation}
+<a id="failure-isolation"></a>
+
+## **Failure Isolation**
 
 The service chain should be designed for fast failure isolation.
 
@@ -3071,7 +3297,9 @@ For example:
 
 This avoids guessing which component is failing.
 
-## **Documentation Requirement** {#documentation-requirement}
+<a id="documentation-requirement"></a>
+
+## **Documentation Requirement**
 
 Every service-chain mode should be documented.
 
@@ -3088,7 +3316,9 @@ Documentation should include:
 
 This is especially important because the project will be built in phases and may be used by a coding agent during implementation.
 
-## **Summary** {#summary-4}
+<a id="summary-4"></a>
+
+## **Summary**
 
 The aMMare service chain must be able to evolve without forcing major rewrites.
 
@@ -3096,7 +3326,9 @@ The core strategy is to use logical endpoints, external configuration, deploymen
 
 Each rewiring event should be deliberate, documented, and validated before additional complexity is added.
 
-# **One-Click Deployment and Modular Install Strategy** {#one-click-deployment-and-modular-install-strategy}
+<a id="one-click-deployment-and-modular-install-strategy"></a>
+
+# **One-Click Deployment and Modular Install Strategy**
 
 The aMMare platform should support a one-click deployment model while preserving modular component control.
 
@@ -3104,7 +3336,9 @@ The top-level deployment process should make the system easy to install, but it 
 
 This keeps deployment simple for the user while keeping the implementation maintainable for future changes.
 
-## **Deployment Principle** {#deployment-principle}
+<a id="deployment-principle"></a>
+
+## **Deployment Principle**
 
 The deployment process should be:
 
@@ -3118,7 +3352,9 @@ The deployment process should be:
 
 The top-level deployment script should coordinate the process. Component scripts should own the details of deploying each service.
 
-## **Top-Level Deployment Script** {#top-level-deployment-script}
+<a id="top-level-deployment-script"></a>
+
+## **Top-Level Deployment Script**
 
 The main deployment entry point should be:
 
@@ -3140,7 +3376,9 @@ This script should:
 
 The top-level script should not contain all component-specific logic directly.
 
-## **Component Deployment Scripts** {#component-deployment-scripts}
+<a id="component-deployment-scripts"></a>
+
+## **Component Deployment Scripts**
 
 Each major service should have its own deployment script.
 
@@ -3161,7 +3399,9 @@ Each component script should be responsible for:
 
 This allows components to be deployed independently during development and troubleshooting.
 
-## **Deployment Profiles** {#deployment-profiles-2}
+<a id="deployment-profiles-2"></a>
+
+## **Deployment Profiles**
 
 Deployment profiles should define which components are deployed and how they are connected.
 
@@ -3189,7 +3429,9 @@ The deployment profile should control:
 
 A profile should make the active deployment mode clear without requiring users to inspect multiple scripts.
 
-## **Deployment Order** {#deployment-order}
+<a id="deployment-order"></a>
+
+## **Deployment Order**
 
 Services should be deployed in dependency order.
 
@@ -3202,7 +3444,9 @@ Minimal deployments may skip most of these services.
 
 The deployment script should not assume every component is enabled. It should read the active profile and deploy only the required components.
 
-## **Preflight Checks** {#preflight-checks}
+<a id="preflight-checks"></a>
+
+## **Preflight Checks**
 
 Before deploying services, the top-level script should run preflight validation.
 
@@ -3220,7 +3464,9 @@ Preflight checks should confirm:
 
 Preflight failures should stop deployment before services are modified.
 
-## **Idempotency Requirements** {#idempotency-requirements}
+<a id="idempotency-requirements"></a>
+
+## **Idempotency Requirements**
 
 Deployment scripts should be safe to rerun.
 
@@ -3238,7 +3484,9 @@ Examples:
 
 This allows users and coding agents to re-run deployment after changes without rebuilding everything manually.
 
-## **Optional Component Flags** {#optional-component-flags}
+<a id="optional-component-flags"></a>
+
+## **Optional Component Flags**
 
 The deployment system should allow optional components to be enabled or disabled.
 
@@ -3251,7 +3499,9 @@ The deployment script should respect these flags.
 
 If a component is disabled, the deployment should either bypass it cleanly or report a clear configuration conflict if another enabled component depends on it.
 
-## **Validation During Deployment** {#validation-during-deployment}
+<a id="validation-during-deployment"></a>
+
+## **Validation During Deployment**
 
 Deployment should include validation at multiple levels.
 
@@ -3269,7 +3519,9 @@ Example scripts:
 
 The final deployment result should clearly state which components passed, failed, or were skipped.
 
-## **Uninstall and Reset Behavior** {#uninstall-and-reset-behavior}
+<a id="uninstall-and-reset-behavior"></a>
+
+## **Uninstall and Reset Behavior**
 
 The project should include controlled uninstall behavior.
 
@@ -3293,7 +3545,9 @@ A destructive reset should require a clear flag such as:
 | \--purge-data |
 | :---- |
 
-## **Generated Files** {#generated-files}
+<a id="generated-files"></a>
+
+## **Generated Files**
 
 Deployment scripts may generate runtime files, service definitions, or local environment files.
 
@@ -3309,7 +3563,9 @@ The project should define:
 
 The coding agent should avoid creating undocumented generated files.
 
-## **Deployment Summary Output** {#deployment-summary-output}
+<a id="deployment-summary-output"></a>
+
+## **Deployment Summary Output**
 
 At the end of deployment, the script should print a clear summary.
 
@@ -3332,7 +3588,9 @@ Example summary fields:
 
 The summary should help the user understand what was deployed without reading logs.
 
-## **Coding Agent Expectations** {#coding-agent-expectations}
+<a id="coding-agent-expectations"></a>
+
+## **Coding Agent Expectations**
 
 The coding agent should implement deployment incrementally.
 
@@ -3348,19 +3606,25 @@ For each deployment phase, the coding agent should:
 
 The coding agent should not build a full deployment framework before the early components are working.
 
-## **Summary** {#summary-5}
+<a id="summary-5"></a>
+
+## **Summary**
 
 The aMMare deployment strategy should provide a simple top-level deployment experience while preserving modular control underneath.
 
 The user should be able to run one command for a selected deployment profile, but each service should still have its own deploy and validation logic. This approach supports phased development, easier troubleshooting, selective component deployment, and safer long-term maintenance.
 
-# **Helper Scripts and Operational Tooling** {#helper-scripts-and-operational-tooling}
+<a id="helper-scripts-and-operational-tooling"></a>
+
+# **Helper Scripts and Operational Tooling**
 
 The aMMare platform should include helper scripts that make deployment, validation, troubleshooting, and ongoing management easier.
 
 These scripts are intended for both human users and coding agents. They should provide fast ways to confirm service health, isolate failures, inspect configuration, and manage model endpoints without requiring manual command discovery.
 
-## **Tooling Principles** {#tooling-principles}
+<a id="tooling-principles"></a>
+
+## **Tooling Principles**
 
 Helper scripts should follow these principles:
 
@@ -3376,7 +3640,9 @@ Helper scripts should follow these principles:
 
 The scripts should support daily operation, not only first-time deployment.
 
-## **Recommended Script Categories** {#recommended-script-categories}
+<a id="recommended-script-categories"></a>
+
+## **Recommended Script Categories**
 
 The project should include helper scripts in the following categories:
 
@@ -3390,7 +3656,9 @@ The project should include helper scripts in the following categories:
 | Troubleshooting bundles | Collect useful diagnostic output for review. |
 | Lifecycle management | Start, stop, restart, deploy, and uninstall services safely. |
 
-## **Core Validation Scripts** {#core-validation-scripts}
+<a id="core-validation-scripts"></a>
+
+## **Core Validation Scripts**
 
 The following scripts should exist early in the project:
 
@@ -3404,7 +3672,9 @@ As components are added, additional validation scripts should be created:
 
 Each validation script should return a non-zero exit code on failure so it can be used by deployment scripts and CI workflows.
 
-## **Service-Chain Validation** {#service-chain-validation}
+<a id="service-chain-validation"></a>
+
+## **Service-Chain Validation**
 
 The service-chain validation script should test the active deployment profile.
 
@@ -3424,7 +3694,9 @@ This script should:
 
 The script should not assume the full deployment is always enabled. It should validate the chain that matches the current profile.
 
-## **Endpoint Testing Scripts** {#endpoint-testing-scripts}
+<a id="endpoint-testing-scripts"></a>
+
+## **Endpoint Testing Scripts**
 
 Endpoint testing scripts should isolate individual service boundaries.
 
@@ -3435,7 +3707,9 @@ Endpoint testing scripts should isolate individual service boundaries.
 
 These scripts should make it easy to determine whether a problem is with the local model, routing layer, Headroom, LangChain, or the full chain.
 
-## **Model Management Scripts** {#model-management-scripts}
+<a id="model-management-scripts"></a>
+
+## **Model Management Scripts**
 
 The project should provide helper scripts for managing model endpoints.
 
@@ -3453,7 +3727,9 @@ They should help users add new local models, cloud models, or provider endpoints
 
 When a model is added, the scripts should identify whether routing configuration also needs to be updated.
 
-## **Routing Management Scripts** {#routing-management-scripts}
+<a id="routing-management-scripts"></a>
+
+## **Routing Management Scripts**
 
 Routing should be inspectable and testable.
 
@@ -3473,7 +3749,9 @@ These scripts should show:
 
 This helps users and coding agents confirm that routing behavior matches the intended configuration.
 
-## **Log Inspection Scripts** {#log-inspection-scripts}
+<a id="log-inspection-scripts"></a>
+
+## **Log Inspection Scripts**
 
 The project should include scripts for common log checks.
 
@@ -3486,7 +3764,9 @@ These scripts should collect relevant logs without requiring users to remember c
 
 Log scripts should redact secrets and avoid dumping excessive output by default.
 
-## **Support Bundle Script** {#support-bundle-script}
+<a id="support-bundle-script"></a>
+
+## **Support Bundle Script**
 
 A support bundle script should collect useful diagnostic information.
 
@@ -3510,7 +3790,9 @@ The support bundle may include:
 
 The bundle should not include raw secrets, private keys, or full credential files.
 
-## **Service Lifecycle Scripts** {#service-lifecycle-scripts}
+<a id="service-lifecycle-scripts"></a>
+
+## **Service Lifecycle Scripts**
 
 The project should provide simple lifecycle scripts.
 
@@ -3528,7 +3810,9 @@ They may also support targeting a specific service:
 
 Service lifecycle scripts should use the documented service names and should not require users to know the underlying container runtime commands.
 
-## **Coding Agent Support** {#coding-agent-support}
+<a id="coding-agent-support"></a>
+
+## **Coding Agent Support**
 
 Helper scripts should make it easier for a coding agent to work safely.
 
@@ -3543,7 +3827,9 @@ When the coding agent adds or modifies a component, it should also update or cre
 
 If a new service is added without a validation script, the implementation should be considered incomplete.
 
-## **Output Standards** {#output-standards}
+<a id="output-standards"></a>
+
+## **Output Standards**
 
 Helper scripts should use consistent output formatting.
 
@@ -3565,7 +3851,9 @@ Scripts should return appropriate exit codes:
 | 0 \= success1 \= failure2 \= invalid usage or missing configuration |
 | :---- |
 
-## **Documentation Requirement** {#documentation-requirement-1}
+<a id="documentation-requirement-1"></a>
+
+## **Documentation Requirement**
 
 Each helper script should be documented.
 
@@ -3580,19 +3868,25 @@ Documentation should include:
 
 The main README should list the most important scripts. Component-specific documentation should reference the scripts relevant to that component.
 
-## **Summary** {#summary-6}
+<a id="summary-6"></a>
+
+## **Summary**
 
 Helper scripts are a required part of the aMMare architecture.
 
 They provide repeatable validation, simplify troubleshooting, support modular deployment, and give coding agents a safe way to verify changes. Every major service should have deployment, validation, logging, and troubleshooting support so the system remains manageable as the service chain grows.
 
-# **Documentation Strategy** {#documentation-strategy}
+<a id="documentation-strategy"></a>
+
+# **Documentation Strategy**
 
 The aMMare project should include documentation for both human users and coding agents.
 
 The documentation should explain the architecture, deployment model, component behavior, configuration files, validation scripts, and safe modification procedures. It should also provide enough implementation guidance for a coding agent to work in phases without losing the overall design intent.
 
-## **Documentation Principles** {#documentation-principles}
+<a id="documentation-principles"></a>
+
+## **Documentation Principles**
 
 Documentation should follow these principles:
 
@@ -3606,7 +3900,9 @@ Documentation should follow these principles:
 * Include examples where they reduce ambiguity.
 * Treat documentation as part of the deliverable, not an afterthought.
 
-## **Recommended Documentation Layout** {#recommended-documentation-layout}
+<a id="recommended-documentation-layout"></a>
+
+## **Recommended Documentation Layout**
 
 **Recommended structure:**
 
@@ -3615,7 +3911,9 @@ Documentation should follow these principles:
 
 This structure keeps the main README readable while allowing deeper documentation where needed.
 
-## **Main README** {#main-readme}
+<a id="main-readme"></a>
+
+## **Main README**
 
 The main **README.md** should be the user’s starting point.
 
@@ -3635,7 +3933,9 @@ The README should not try to contain every technical detail. It should point to 
 
 However, always assume more documentation is needed, but do not assume that you should link directly from the [README.md](http://readme.md/), Rather assume that you will be documenting topics related to an already documented components and add new and additional supporting documents to the appropriate md file linked from the [README.md](http://readme.md/)
 
-## **Architecture Documentation** {#architecture-documentation}
+<a id="architecture-documentation"></a>
+
+## **Architecture Documentation**
 
 The architecture document should describe the intended system design.
 
@@ -3652,7 +3952,9 @@ It should explain:
 
 This document should remain conceptual and design-focused. Detailed commands should live in deployment, validation, or component documents.
 
-## **Component Documentation** {#component-documentation}
+<a id="component-documentation"></a>
+
+## **Component Documentation**
 
 Each major component should have its own documentation file.
 
@@ -3671,7 +3973,9 @@ Each component document should include:
 
 Component documentation should be updated whenever the component’s behavior, configuration, ports, or service-chain role changes.
 
-## **Modification Guides** {#modification-guides}
+<a id="modification-guides"></a>
+
+## **Modification Guides**
 
 The project should document how to modify each major layer.
 
@@ -3690,7 +3994,9 @@ Examples:
 
 These guides are important because the system is expected to evolve after the initial deployment.
 
-## **Deployment Documentation** {#deployment-documentation}
+<a id="deployment-documentation"></a>
+
+## **Deployment Documentation**
 
 Deployment documentation should explain how to install and operate the platform.
 
@@ -3711,7 +4017,9 @@ Deployment documentation should match the actual scripts.
 
 If the deployment process changes, the documentation must be updated in the same phase.
 
-## **Configuration Documentation** {#configuration-documentation}
+<a id="configuration-documentation"></a>
+
+## **Configuration Documentation**
 
 Configuration documentation should explain which files control which behavior.
 
@@ -3729,7 +4037,9 @@ It should include:
 
 This documentation should make it clear where a user or coding agent should make changes.
 
-## **Validation and Troubleshooting Documentation** {#validation-and-troubleshooting-documentation}
+<a id="validation-and-troubleshooting-documentation"></a>
+
+## **Validation and Troubleshooting Documentation**
 
 Validation documentation should explain how to prove the system is working.
 
@@ -3753,7 +4063,9 @@ Troubleshooting documentation should provide failure isolation paths.
 
 Troubleshooting documentation should reference helper scripts instead of requiring users to assemble long manual commands.
 
-## **Coding Agent Documentation** {#coding-agent-documentation}
+<a id="coding-agent-documentation"></a>
+
+## **Coding Agent Documentation**
 
 The coding agent implementation guide should provide explicit development instructions.
 
@@ -3771,7 +4083,9 @@ It should include:
 
 This document should be written as an operating guide for a coding agent that is modifying the repository incrementally.
 
-## **Documentation Update Requirement** {#documentation-update-requirement}
+<a id="documentation-update-requirement"></a>
+
+## **Documentation Update Requirement**
 
 Documentation must be updated whenever implementation changes affect user behavior, service behavior, or architecture assumptions.
 
@@ -3790,7 +4104,9 @@ Documentation updates are required when:
 
 A code change that modifies behavior but leaves documentation stale should be considered incomplete.
 
-## **Avoiding Redundancy** {#avoiding-redundancy}
+<a id="avoiding-redundancy"></a>
+
+## **Avoiding Redundancy**
 
 The documentation set should avoid repeating the same detailed content in multiple files.
 
@@ -3809,19 +4125,25 @@ Recommended ownership:
 
 Other documents may reference these sections, but they should not duplicate them in full.
 
-## **Summary** {#summary-7}
+<a id="summary-7"></a>
+
+## **Summary**
 
 The aMMare documentation strategy should support both understanding and implementation.
 
 The README should provide a practical entry point. Detailed documentation should live under **docs/**, with separate files for architecture, deployment, configuration, validation, troubleshooting, and individual components. Documentation should be updated alongside code so the project remains usable by both human operators and coding agents.
 
-# **Coding Agent Implementation Guide** {#coding-agent-implementation-guide}
+<a id="coding-agent-implementation-guide"></a>
+
+# **Coding Agent Implementation Guide**
 
 The aMMare architecture document should also serve as planning input for the coding agent.
 
 The coding agent is expected to build the platform incrementally, validate each phase, and update documentation as implementation changes are made. It should not attempt to build the complete architecture in one large pass.
 
-## **Implementation Principles** {#implementation-principles}
+<a id="implementation-principles"></a>
+
+## **Implementation Principles**
 
 The coding agent should follow these principles:
 
@@ -3839,7 +4161,9 @@ The coding agent should follow these principles:
 
 The coding agent should treat this architecture document as the source of intent, but it should still inspect the current repository state before making changes.
 
-## **Phase-Based Development** {#phase-based-development}
+<a id="phase-based-development"></a>
+
+## **Phase-Based Development**
 
 The coding agent should work through the roadmap one phase at a time.
 
@@ -3862,7 +4186,9 @@ Any changes that are required to fix broken components should be reviewed in ord
 
 If changes are needed that affect the architecture as a whole, there must be a human-in-the-loop (HITL) review, and documentation should be reviewed to ensure that any such changes are well documented.
 
-## **Required Work Pattern** {#required-work-pattern}
+<a id="required-work-pattern"></a>
+
+## **Required Work Pattern**
 
 For each implementation task, the coding agent should use this pattern:
 
@@ -3873,7 +4199,9 @@ The coding agent should not begin by rewriting large parts of the repository.
 
 It should first inspect the current files and understand what already exists. Then it should propose or follow a limited plan, make the smallest useful changes, run validation, update documentation, and report the result.
 
-## **Repository Awareness** {#repository-awareness}
+<a id="repository-awareness"></a>
+
+## **Repository Awareness**
 
 Before modifying files, the coding agent should inspect the repository structure.
 
@@ -3891,7 +4219,9 @@ The coding agent should extend existing patterns when they are reasonable instea
 
 If existing files conflict with this architecture document, the coding agent should flag the conflict before making broad changes.
 
-## **Configuration Rules** {#configuration-rules}
+<a id="configuration-rules"></a>
+
+## **Configuration Rules**
 
 The coding agent should use the documented configuration model.
 
@@ -3911,7 +4241,9 @@ These values should come from environment files, structured config files, or doc
 
 Local IP addresses are acceptable for the lab deployment, but they must still be assigned through configuration.
 
-## **Service Chain Rules** {#service-chain-rules}
+<a id="service-chain-rules"></a>
+
+## **Service Chain Rules**
 
 The coding agent should preserve the ability to rewire the service chain.
 
@@ -3930,7 +4262,9 @@ Service-chain changes should update:
 * Topology documentation.
 * Troubleshooting documentation.
 
-## **Script Standards** {#script-standards}
+<a id="script-standards"></a>
+
+## **Script Standards**
 
 Scripts should be written for repeatable operations.
 
@@ -3953,7 +4287,9 @@ Recommended status labels:
 
 The coding agent should not create one-off scripts without documenting their purpose.
 
-## **Deployment Script Expectations** {#deployment-script-expectations}
+<a id="deployment-script-expectations"></a>
+
+## **Deployment Script Expectations**
 
 The top-level deployment script should orchestrate component scripts.
 
@@ -3975,7 +4311,9 @@ When a new component is added, the coding agent should add or update:
 * Component documentation.
 * Top-level deployment integration if appropriate.
 
-## **Validation Requirements** {#validation-requirements}
+<a id="validation-requirements"></a>
+
+## **Validation Requirements**
 
 Every meaningful implementation step should include validation.
 
@@ -3994,7 +4332,9 @@ The coding agent should prefer existing validation scripts over ad hoc commands.
 
 If no validation script exists for a new component, the coding agent should create one.
 
-## **Documentation Requirements** {#documentation-requirements}
+<a id="documentation-requirements"></a>
+
+## **Documentation Requirements**
 
 The coding agent should update documentation when it changes behavior.
 
@@ -4012,7 +4352,9 @@ Documentation updates are required when:
 
 Documentation should be updated in the same implementation phase as the code change.
 
-## **Error Handling Expectations** {#error-handling-expectations}
+<a id="error-handling-expectations"></a>
+
+## **Error Handling Expectations**
 
 The coding agent should implement clear error handling.
 
@@ -4029,7 +4371,9 @@ Scripts and services should fail with useful messages when:
 
 Errors should identify the failing component and the next file or command to inspect.
 
-## **Security Expectations** {#security-expectations}
+<a id="security-expectations"></a>
+
+## **Security Expectations**
 
 The coding agent should avoid unsafe defaults.
 
@@ -4047,7 +4391,9 @@ It should not:
 
 Destructive operations should require explicit user action.
 
-## **Reporting Requirements** {#reporting-requirements}
+<a id="reporting-requirements"></a>
+
+## **Reporting Requirements**
 
 At the end of a coding-agent task, the report should include:
 
@@ -4062,7 +4408,9 @@ At the end of a coding-agent task, the report should include:
 
 The report should distinguish between completed work and deferred work.
 
-## **Stop Conditions** {#stop-conditions}
+<a id="stop-conditions"></a>
+
+## **Stop Conditions**
 
 The coding agent should stop and report when:
 
@@ -4076,19 +4424,25 @@ The coding agent should stop and report when:
 
 The coding agent should not hide unresolved failures and continue building additional layers on top of a broken phase.
 
-## **Summary** {#summary-8}
+<a id="summary-8"></a>
+
+## **Summary**
 
 The coding agent should treat aMMare as a phased, configuration-driven, service-chain architecture.
 
 It should build incrementally, validate each layer, preserve rewiring flexibility, keep scripts modular, avoid hardcoding, and update documentation as part of every implementation phase. This approach allows the project to grow from a minimal local deployment into a more complete multi-model routing engine without losing maintainability.
 
-# **Memory, Context, and Retrieval Strategy** {#memory,-context,-and-retrieval-strategy}
+<a id="memory,-context,-and-retrieval-strategy"></a>
+
+# **Memory, Context, and Retrieval Strategy**
 
 The aMMare platform may support memory, context management, and retrieval as optional capabilities.
 
 These capabilities should be introduced only after the core model path is stable. The initial system should first prove that LangChain, the local model endpoint, LiteLLM, cloud model providers, and routing logic work correctly. Memory and retrieval should not be added early if they make troubleshooting the base service chain more difficult.
 
-## **Strategy Principle** {#strategy-principle}
+<a id="strategy-principle"></a>
+
+## **Strategy Principle**
 
 Memory and retrieval should improve response quality without making model behavior unpredictable or difficult to debug.
 
@@ -4103,7 +4457,9 @@ The system should distinguish between:
 
 These should not all be treated as the same type of context.
 
-## **Session Context** {#session-context}
+<a id="session-context"></a>
+
+## **Session Context**
 
 Session context is the short-term conversation or workflow state used during an active interaction.
 
@@ -4120,7 +4476,9 @@ It may include:
 
 Session context should be temporary unless explicitly stored elsewhere.
 
-## **Runtime Task State** {#runtime-task-state}
+<a id="runtime-task-state"></a>
+
+## **Runtime Task State**
 
 Runtime task state tracks the current workflow inside the middleware.
 
@@ -4138,7 +4496,9 @@ It may include:
 
 This state is operational data. It helps the middleware manage the workflow, but it does not automatically become persistent memory.
 
-## **Retrieved Context** {#retrieved-context}
+<a id="retrieved-context"></a>
+
+## **Retrieved Context**
 
 Retrieved context is information pulled from an indexed source to support a specific request.
 
@@ -4157,7 +4517,9 @@ Retrieved context should be relevant, limited, and traceable to its source.
 
 The system should avoid injecting large amounts of unrelated context into prompts.
 
-## **Persistent Memory** {#persistent-memory}
+<a id="persistent-memory"></a>
+
+## **Persistent Memory**
 
 Persistent memory is information intentionally saved for future use.
 
@@ -4175,7 +4537,9 @@ Persistent memory may include:
 
 Persistent memory should not automatically store every conversation, log, file, or tool result.
 
-## **Memory Storage Rules** {#memory-storage-rules}
+<a id="memory-storage-rules"></a>
+
+## **Memory Storage Rules**
 
 The platform should define what may be stored and what should not be stored.
 
@@ -4194,7 +4558,9 @@ Memory should not store:
 
 Memory should prefer stable, confirmed information.
 
-## **Retrieval Backend** {#retrieval-backend}
+<a id="retrieval-backend"></a>
+
+## **Retrieval Backend**
 
 If retrieval is enabled, the platform may use a vector database or another indexed retrieval backend.
 
@@ -4212,7 +4578,9 @@ Possible stored data may include:
 
 The retrieval backend should support rebuild or reindex operations so stale content can be corrected.
 
-## **Embedding Model** {#embedding-model}
+<a id="embedding-model"></a>
+
+## **Embedding Model**
 
 Retrieval may require an embedding model.
 
@@ -4227,7 +4595,9 @@ Embedding configuration should be externalized in the same way as model routing 
 | config/models.yamlconfig/retrieval.yamlenv/ammare-memory.env |
 | :---- |
 
-## **Context Injection Policy** {#context-injection-policy}
+<a id="context-injection-policy"></a>
+
+## **Context Injection Policy**
 
 Retrieved context should be injected into prompts according to policy.
 
@@ -4244,7 +4614,9 @@ The policy should define:
 
 The system should favor smaller, higher-quality context over large context dumps.
 
-## **Source Tracking** {#source-tracking}
+<a id="source-tracking"></a>
+
+## **Source Tracking**
 
 Retrieved context should be traceable.
 
@@ -4258,7 +4630,9 @@ When the model uses retrieved context, the middleware should track:
 
 This helps debug poor responses and makes retrieval behavior easier to improve.
 
-## **Memory and Routing Interaction** {#memory-and-routing-interaction}
+<a id="memory-and-routing-interaction"></a>
+
+## **Memory and Routing Interaction**
 
 Memory and retrieval may influence model routing, but they should not bypass routing policy.
 
@@ -4271,7 +4645,9 @@ For example:
 
 Routing policy should remain explicit and configurable.
 
-## **Memory and Tool Safety** {#memory-and-tool-safety}
+<a id="memory-and-tool-safety"></a>
+
+## **Memory and Tool Safety**
 
 Memory should not bypass the tool execution safety model.
 
@@ -4288,7 +4664,9 @@ Tool execution should still follow:
 
 Memory improves context. It does not expand authority.
 
-## **Indexing Process** {#indexing-process}
+<a id="indexing-process"></a>
+
+## **Indexing Process**
 
 The indexing process should be controlled and repeatable.
 
@@ -4310,7 +4688,9 @@ Indexing scripts should:
 
 The coding agent should not silently index everything in the repository without clear rules.
 
-## **Retrieval Validation** {#retrieval-validation}
+<a id="retrieval-validation"></a>
+
+## **Retrieval Validation**
 
 Retrieval should have its own validation process.
 
@@ -4326,7 +4706,9 @@ Validation should confirm:
 
 Retrieval quality should be tested separately from model quality.
 
-## **Reset and Purge Behavior** {#reset-and-purge-behavior}
+<a id="reset-and-purge-behavior"></a>
+
+## **Reset and Purge Behavior**
 
 Memory and retrieval data should be removable.
 
@@ -4347,7 +4729,9 @@ Example:
 
 Normal uninstall should not delete memory or retrieval data unless explicitly requested.
 
-## **Documentation Requirement** {#documentation-requirement-2}
+<a id="documentation-requirement-2"></a>
+
+## **Documentation Requirement**
 
 Memory and retrieval behavior should be documented.
 
@@ -4365,19 +4749,25 @@ Documentation should explain:
 
 This is especially important because memory-related behavior can be difficult to understand if it is not documented clearly.
 
-## **Summary** {#summary-9}
+<a id="summary-9"></a>
+
+## **Summary**
 
 Memory, context, and retrieval should be optional, controlled, and introduced only after the core aMMare service chain is stable.
 
 The system should clearly separate session context, runtime task state, retrieved context, and persistent memory. Retrieval should be source-tracked, configurable, and validated independently. Memory should improve continuity without storing secrets, bypassing safety controls, or making model behavior difficult to troubleshoot.
 
-# **Deployment Model** {#deployment-model}
+<a id="deployment-model"></a>
+
+# **Deployment Model**
 
 The aMMare platform should be deployed as a containerized, local-first service stack.
 
 The initial target environment is a local lab or development host. The platform should not require public inbound access, external orchestration, or a cloud deployment to function. Cloud model providers may be added later as optional backends, but the core system should remain usable with local services.
 
-## **Deployment Goals** {#deployment-goals}
+<a id="deployment-goals"></a>
+
+## **Deployment Goals**
 
 The deployment model should support:
 
@@ -4393,7 +4783,9 @@ The deployment model should support:
 
 The deployment should begin small and expand only as each phase is validated.
 
-## **Initial Deployment Target** {#initial-deployment-target}
+<a id="initial-deployment-target"></a>
+
+## **Initial Deployment Target**
 
 The initial deployment should assume a single local host running the required containers.
 
@@ -4409,7 +4801,9 @@ This creates the first working request path:
 
 This model is intentionally simple. It validates the core middleware-to-model path before additional routing or gateway components are introduced.
 
-## **Expanded Deployment Target** {#expanded-deployment-target}
+<a id="expanded-deployment-target"></a>
+
+## **Expanded Deployment Target**
 
 Later deployments may add:
 
@@ -4423,7 +4817,9 @@ The expanded deployment may support:
 
 Memory, retrieval, and OpenHands should remain optional and should be enabled only when the core model-routing path is stable.
 
-## **Container Runtime** {#container-runtime}
+<a id="container-runtime"></a>
+
+## **Container Runtime**
 
 The platform should run each major component as a separate containerized service.
 
@@ -4443,7 +4839,9 @@ Each service should define:
 
 The coding agent should avoid assuming that all services run inside one container.
 
-## **Network Model** {#network-model-1}
+<a id="network-model-1"></a>
+
+## **Network Model**
 
 The default network model should be local and private.
 
@@ -4460,7 +4858,9 @@ Public inbound exposure should not be required.
 
 If cloud model providers are enabled, the deployment may require outbound internet access from the host or routing layer.
 
-## **IP Address and DNS Strategy** {#ip-address-and-dns-strategy}
+<a id="ip-address-and-dns-strategy"></a>
+
+## **IP Address and DNS Strategy**
 
 The platform may use either local IP addresses or local DNS names.
 
@@ -4473,7 +4873,9 @@ However, service targets should still be assigned through configuration variable
 
 This allows the backend path to change without modifying application code.
 
-## **Persistent Data** {#persistent-data}
+<a id="persistent-data"></a>
+
+## **Persistent Data**
 
 Persistent data should be stored in predictable project or host paths.
 
@@ -4484,7 +4886,9 @@ Examples:
 
 Persistent data should not be deleted during normal redeployment or uninstall unless the user explicitly requests a destructive purge.
 
-## **Configuration and Secrets** {#configuration-and-secrets}
+<a id="configuration-and-secrets"></a>
+
+## **Configuration and Secrets**
 
 Deployment-specific values should be stored in environment files and structured config files.
 
@@ -4500,7 +4904,9 @@ The deployment should clearly distinguish between:
 
 No raw secrets should be committed to the repository. No secrets in commit messages.
 
-## **Deployment Profiles** {#deployment-profiles-3}
+<a id="deployment-profiles-3"></a>
+
+## **Deployment Profiles**
 
 The deployment model should support profiles.
 
@@ -4513,7 +4919,9 @@ Each profile should define which services are enabled and how the service chain 
 
 The default profile should be the simplest working deployment.
 
-## **Host Assumptions** {#host-assumptions}
+<a id="host-assumptions"></a>
+
+## **Host Assumptions**
 
 The initial host should provide:
 
@@ -4527,7 +4935,9 @@ The initial host should provide:
 
 Exact hardware requirements should be documented after the initial model runtime is selected.
 
-## **Deployment Boundary** {#deployment-boundary}
+<a id="deployment-boundary"></a>
+
+## **Deployment Boundary**
 
 The initial deployment should not attempt to solve every production concern.
 
@@ -4543,19 +4953,25 @@ Deferred or optional areas may include:
 
 These may be considered later if the project matures beyond the local lab deployment.
 
-## **Summary** {#summary-10}
+<a id="summary-10"></a>
+
+## **Summary**
 
 The aMMare deployment model is local-first, containerized, modular, and profile-driven.
 
 The first deployment should prove the smallest useful service chain. Later profiles can add LiteLLM, cloud providers, Headroom, OpenHands, memory, and retrieval. Static local IPs are acceptable for the lab environment, but service relationships should remain configurable so the deployment can evolve without code rewrites.
 
-# **Validation and Success Criteria** {#validation-and-success-criteria}
+<a id="validation-and-success-criteria"></a>
+
+# **Validation and Success Criteria**
 
 The aMMare platform should define clear validation steps and success criteria for each development phase.
 
 A phase should not be considered complete simply because files were created or containers started. Each phase must prove that the intended behavior works, that failures are understandable, and that documentation has been updated.
 
-## **Primary Success Criteria** {#primary-success-criteria}
+<a id="primary-success-criteria"></a>
+
+## **Primary Success Criteria**
 
 The primary success criteria for aMMare is to prove that the platform can function as a practical agentic coding assistant endpoint.
 
@@ -4581,7 +4997,9 @@ The platform should not only answer questions about code or infrastructure. It s
 
 A successful validation result should prove that aMMare can operate as more than a model proxy. It should behave as a controlled agentic middleware layer capable of supporting real coding, deployment, and troubleshooting workflows while preserving safety controls, auditability, and user approval for sensitive actions.
 
-## **Validation Principles** {#validation-principles}
+<a id="validation-principles"></a>
+
+## **Validation Principles**
 
 Validation should follow these principles:
 
@@ -4597,7 +5015,9 @@ Validation should follow these principles:
 
 The project should treat failed validation as a phase blocker.
 
-## **Phase-Level Success Criteria** {#phase-level-success-criteria}
+<a id="phase-level-success-criteria"></a>
+
+## **Phase-Level Success Criteria**
 
 Each phase should define its own success criteria.
 
@@ -4617,7 +5037,9 @@ At minimum, a phase is successful when:
 
 If a phase introduces a new component, that component should have deployment, validation, logging, and troubleshooting support.
 
-## **Configuration Validation** {#configuration-validation-1}
+<a id="configuration-validation-1"></a>
+
+## **Configuration Validation**
 
 Configuration validation should confirm that the active deployment profile is usable before services are deployed.
 
@@ -4639,7 +5061,9 @@ Recommended script:
 | scripts/validate-config.sh |
 | :---- |
 
-## **Component Validation** {#component-validation}
+<a id="component-validation"></a>
+
+## **Component Validation**
 
 Each major component should have a validation script.
 
@@ -4658,7 +5082,9 @@ Component validation should confirm:
 * Logs do not show fatal startup errors.
 * A minimal functional test succeeds where practical.
 
-## **Service-Chain Validation** {#service-chain-validation-1}
+<a id="service-chain-validation-1"></a>
+
+## **Service-Chain Validation**
 
 The active service chain should be validated end to end.
 
@@ -4693,7 +5119,9 @@ Examples:
 
 The validation result should identify which layer failed if the full chain does not pass.
 
-## **Model Routing Validation** {#model-routing-validation}
+<a id="model-routing-validation"></a>
+
+## **Model Routing Validation**
 
 When routing is enabled, routing behavior should be validated separately from basic service health.
 
@@ -4713,7 +5141,9 @@ Recommended scripts:
 | scripts/validate-routing.shscripts/show-routing.shscripts/test-routing.sh |
 | :---- |
 
-## **Tool Execution Validation** {#tool-execution-validation}
+<a id="tool-execution-validation"></a>
+
+## **Tool Execution Validation**
 
 If tool execution is enabled, validation should confirm that tool access is controlled.
 
@@ -4730,7 +5160,9 @@ Validation should check:
 
 Tool validation should be conservative. It should prove that safety controls work, not only that tools can execute.
 
-## **Memory and Retrieval Validation** {#memory-and-retrieval-validation}
+<a id="memory-and-retrieval-validation"></a>
+
+## **Memory and Retrieval Validation**
 
 If memory or retrieval is enabled, it should be validated independently.
 
@@ -4750,7 +5182,9 @@ Recommended scripts:
 | scripts/validate-memory.shscripts/validate-retrieval.shscripts/rebuild-retrieval-index.sh |
 | :---- |
 
-## **Deployment Validation** {#deployment-validation}
+<a id="deployment-validation"></a>
+
+## **Deployment Validation**
 
 A successful deployment should produce a clear summary.
 
@@ -4767,7 +5201,9 @@ The summary should include:
 
 A deployment should not be considered successful if the script completes but the active service chain fails validation.
 
-## **Documentation Validation** {#documentation-validation}
+<a id="documentation-validation"></a>
+
+## **Documentation Validation**
 
 Documentation should be checked as part of phase completion.
 
@@ -4784,7 +5220,9 @@ Documentation should accurately describe:
 
 If implementation and documentation disagree, the phase should be considered incomplete.
 
-## **Final System Success Criteria** {#final-system-success-criteria}
+<a id="final-system-success-criteria"></a>
+
+## **Final System Success Criteria**
 
 The final system should be considered successful when:
 
@@ -4802,7 +5240,9 @@ The final system should be considered successful when:
 * No secrets are committed.
 * Destructive actions require explicit user intent.
 
-## **Failure Criteria** {#failure-criteria}
+<a id="failure-criteria"></a>
+
+## **Failure Criteria**
 
 A phase should not proceed if:
 
@@ -4818,19 +5258,25 @@ A phase should not proceed if:
 
 Failures should be fixed or documented before moving to the next phase.
 
-## **Summary** {#summary-11}
+<a id="summary-11"></a>
+
+## **Summary**
 
 Validation is a required part of the aMMare development model.
 
 Each phase should produce a working, documented, and testable system state. Component validation proves individual services work. Service-chain validation proves the active request path works. Final success requires the deployment, routing, helper scripts, documentation, and safety controls to behave consistently with the architecture.
 
-# **Deferred v2 Features** {#deferred-v2-features}
+<a id="deferred-v2-features"></a>
+
+# **Deferred v2 Features**
 
 The initial aMMare implementation should focus on proving the core local-first, multi-model routing architecture.
 
 Some features are valuable but should be deferred until the base platform is stable, documented, and validated. Deferring these items keeps the first implementation achievable and reduces troubleshooting complexity.
 
-## **Deferral Principle** {#deferral-principle}
+<a id="deferral-principle"></a>
+
+## **Deferral Principle**
 
 A feature should be deferred when it adds complexity without being required to prove the core architecture.
 
@@ -4844,7 +5290,9 @@ Deferred features may be revisited after the platform can reliably:
 * Use modular deployment scripts.
 * Provide clear documentation and troubleshooting guidance.
 
-## **Deferred Features List** {#deferred-features-list}
+<a id="deferred-features-list"></a>
+
+## **Deferred Features List**
 
 The following features should be considered v2 or later unless explicitly pulled into the initial scope.
 
@@ -4866,7 +5314,9 @@ The following features should be considered v2 or later unless explicitly pulled
 | External plugin marketplace | Too broad for the initial architecture. |
 | Automated self-update mechanism | Should wait until deployment and rollback behavior are mature. |
 
-## **Not Deferred** {#not-deferred}
+<a id="not-deferred"></a>
+
+## **Not Deferred**
 
 The following capabilities are not deferred because they are required for the initial architecture:
 
@@ -4887,7 +5337,9 @@ The following capabilities are not deferred because they are required for the in
 
 These are part of the minimum architecture required to prove aMMare.
 
-## **Conditional Features** {#conditional-features}
+<a id="conditional-features"></a>
+
+## **Conditional Features**
 
 Some features may be optional in the initial implementation but should be planned for structurally.
 
@@ -4903,7 +5355,9 @@ Some features may be optional in the initial implementation but should be planne
 
 These features should not block the minimal local deployment, but the architecture should avoid choices that make them difficult to add later.
 
-## **Re-Evaluation Criteria** {#re-evaluation-criteria}
+<a id="re-evaluation-criteria"></a>
+
+## **Re-Evaluation Criteria**
 
 Deferred features may be reconsidered when:
 
@@ -4918,13 +5372,17 @@ Deferred features may be reconsidered when:
 
 A deferred feature should not be added only because it is interesting. It should have a clear purpose and a validation plan.
 
-## **Summary** {#summary-12}
+<a id="summary-12"></a>
+
+## **Summary**
 
 Deferred v2 features are intentionally excluded from the first implementation so the project can focus on a reliable, local-first multi-model routing engine.
 
 The initial release should prove the core chain, configuration model, routing behavior, modular deployment, validation scripts, and documentation. More advanced platform features can be added after the foundation is stable.
 
-# **Client Tool Integration Strategy** {#client-tool-integration-strategy}
+<a id="client-tool-integration-strategy"></a>
+
+# **Client Tool Integration Strategy**
 
 The aMMare platform should be easy to use from common IDEs, editors, and agentic coding tools.
 
@@ -4932,7 +5390,9 @@ A primary goal of the project is to reduce the barrier to entry for end users wh
 
 The platform should provide both documentation and helper scripts for configuring supported tools.
 
-## **Integration Goal** {#integration-goal}
+<a id="integration-goal"></a>
+
+## **Integration Goal**
 
 The end user should be able to configure a supported client tool to use aMMare as its model gateway or API endpoint.
 
@@ -4948,7 +5408,9 @@ Supported tools may include:
 
 The exact level of support may vary by tool, but the project should aim to provide a clear path for each supported integration.
 
-## **Gateway Compatibility** {#gateway-compatibility}
+<a id="gateway-compatibility"></a>
+
+## **Gateway Compatibility**
 
 Where practical, the aMMare gateway should expose an OpenAI-compatible API surface.
 
@@ -4968,7 +5430,9 @@ The documentation should clearly define:
 
 The goal is not to make every client behave identically. The goal is to make the expected behavior clear and easy to configure.
 
-## **Client Configuration Scripts** {#client-configuration-scripts}
+<a id="client-configuration-scripts"></a>
+
+## **Client Configuration Scripts**
 
 The project should include helper scripts that configure supported tools to use aMMare where possible.
 
@@ -4990,7 +5454,9 @@ These scripts should:
 
 If a tool’s configuration format changes or cannot be safely modified, the script should stop and provide manual instructions instead of making unsafe assumptions.
 
-## **Manual Configuration Documentation** {#manual-configuration-documentation}
+<a id="manual-configuration-documentation"></a>
+
+## **Manual Configuration Documentation**
 
 Each supported client tool should have a short integration document.
 
@@ -5014,7 +5480,9 @@ Each document should include:
 
 The project may link to external installation and product documentation instead of recreating full upstream documentation. The aMMare documentation should focus on what is specific to connecting that tool to the aMMare gateway.
 
-## **Example Configuration Values** {#example-configuration-values}
+<a id="example-configuration-values"></a>
+
+## **Example Configuration Values**
 
 The documentation should provide consistent example values.
 
@@ -5045,7 +5513,9 @@ Example high-reasoning model alias:
 
 The actual values should be defined in the active configuration files and deployment profile. Examples should not become hardcoded assumptions.
 
-## **Integration Profiles** {#integration-profiles}
+<a id="integration-profiles"></a>
+
+## **Integration Profiles**
 
 The project may define integration profiles for common client use cases.
 
@@ -5061,7 +5531,9 @@ Examples:
 
 These profiles should map to documented model aliases and gateway behavior.
 
-## **Tool-Specific Notes** {#tool-specific-notes}
+<a id="tool-specific-notes"></a>
+
+## **Tool-Specific Notes**
 
 Different client tools may interact with aMMare differently.
 
@@ -5075,7 +5547,9 @@ For example:
 
 The integration documentation should identify these differences clearly.
 
-## **Validation for Client Integrations** {#validation-for-client-integrations}
+<a id="validation-for-client-integrations"></a>
+
+## **Validation for Client Integrations**
 
 Each client integration should include a validation process.
 
@@ -5096,7 +5570,9 @@ Confirm that you are responding through the aMMare gateway. Then summarize the a
 
 For coding tools, validation may also include a simple repository-local task such as inspecting a README, explaining a script, or generating a small non-destructive file.
 
-## **Safety and Permissions** {#safety-and-permissions}
+<a id="safety-and-permissions"></a>
+
+## **Safety and Permissions**
 
 Client integration should not bypass the aMMare safety model.
 
@@ -5112,7 +5588,9 @@ The documentation should explain where permissions are controlled:
 
 Users should understand whether a task is being executed by the client directly or by aMMare-controlled tooling.
 
-## **Documentation Requirement** {#documentation-requirement-3}
+<a id="documentation-requirement-3"></a>
+
+## **Documentation Requirement**
 
 The main README should include a short “Supported Client Tools” section.
 
@@ -5125,7 +5603,9 @@ That section should link to the detailed integration documents and identify the 
 
 The README should not contain every configuration detail. It should point users to the correct integration document.
 
-## **Summary** {#summary-13}
+<a id="summary-13"></a>
+
+## **Summary**
 
 The aMMare client integration strategy is intended to make the platform easy to adopt from existing coding tools.
 
