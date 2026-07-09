@@ -18,6 +18,10 @@
 </p>
 
 ---
+## Disclaimer
+Note that this project is still in the planning stage; you can check out the architecture doc in pdf of md format below
+[PDF](https://github.com/christopherpaquin/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/blob/main/architecture/aMMare%20-%20Asymmetric%20Multi-Model%20AI%20Routing%20Engine%20-%20V1.2.pdf)
+[Markdown](https://github.com/christopherpaquin/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/blob/main/architecture/aMMare%20-%20Asymmetric%20Multi-Model%20AI%20Routing%20Engine%20-%20V1.2.pdf)
 
 ## Pronunciation Guide
 
