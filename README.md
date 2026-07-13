@@ -18,10 +18,12 @@
 </p>
 
 ---
+
 ## Disclaimer
-Note that this project is still in the planning stage; you can check out the architecture doc in pdf of md format below  
-[PDF](https://github.com/christopherpaquin/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/blob/main/architecture/aMMare%20-%20Asymmetric%20Multi-Model%20AI%20Routing%20Engine%20-%20V1.2.pdf)  
-[Markdown](https://github.com/christopherpaquin/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/blob/main/architecture/aMMare%20-%20Asymmetric%20Multi-Model%20AI%20Routing%20Engine%20-%20V1.2.pdf)  
+
+Note that this project is still in the planning stage; you can check out the architecture doc in pdf of md format below
+[PDF](https://github.com/christopherpaquin/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/blob/main/architecture/aMMare%20-%20Asymmetric%20Multi-Model%20AI%20Routing%20Engine%20-%20V1.2.pdf)
+[Markdown](https://github.com/christopherpaquin/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/blob/main/architecture/aMMare%20-%20Asymmetric%20Multi-Model%20AI%20Routing%20Engine%20-%20V1.2.pdf)
 
 ## Pronunciation Guide
 
@@ -76,8 +78,9 @@ The system is designed around a physical service-chain model. Requests flow from
 
 ## **Architecture & Implementation Guides**
 
-The setup, integration, and security implementation steps are documented in detail across the following step-by-step guides:
+The setup, integration, and security implementation steps are documented in detail across the following step-by-step guides and overview documents:
 
+- **[Implementation & Integration Overview (Roadmap)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/architecture/implementation_overview.md)**
 - **[Implementation Index (README)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/README.md)**
 - **[Phase 0: Repository Scaffold & Baseline Standards](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_0_scaffold.md)**
 - **[Phase 1: Local LLM Endpoint (vLLM)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_1_local_llm.md)**
