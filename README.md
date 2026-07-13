@@ -27,8 +27,10 @@ Note that this project is still in the planning stage; you can check out the arc
 
 Ammare (or aMMare) is pronounced /ˈæm.ɑːɹ/
 
-- Syllable 1 (/ˈæm/): Say the word "am" (as in, "I am"). Make sure the "a" sound is flat and sharp, like the "a" in cat or trap. Drop your jaw slightly and push the sound from the front of your mouth.
-- Syllable 2 (/.ɑːɹ/): Say the word "marr" (as in, "This is a non-marring mallet, as I do not want to mar the new flooring during installation."). Pronounce the M, then make a wide, open throat sound like the "ah" sound you make at the doctor, smoothly blending into a standard English "R" sound (like at the end of car or far).
+- **Syllable 1 (/ˈæm/)**: Say the word "am" (as in, "I am"). Make sure the "a" sound is flat and sharp, like the "a" in cat or trap. Drop your jaw slightly and push the sound from the front of your mouth.
+- **Syllable 2 (/.ɑːɹ/)**: Say the word "marr" (as in, "This is a non-marring mallet, as I do not want to mar the new flooring during installation."). Pronounce the M, then make a wide, open throat sound like the "ah" sound you make at the doctor, smoothly blending into a standard English "R" sound (like at the end of car or far).
+
+---
 
 ## Executive Summary
 
@@ -72,34 +74,72 @@ The system is designed around a physical service-chain model. Requests flow from
 
 ---
 
-## Development Roadmap
+## **Architecture & Implementation Guides**
 
-The project is structured around 13 distinct development phases:
+The setup, integration, and security implementation steps are documented in detail across the following step-by-step guides:
 
-- **Phase Zero: Repository Scaffold and Baseline Standards**
-  - Initialize directory structure, config folders, styling guidelines, and pre-commit automation.
-- **Phase One: Local LLM Endpoint**
-  - Deploy vLLM local container, configure multi-GPU parallelisms for laboratory GPUs (e.g., dual NVIDIA RTX 3060s), and expose a logical model gateway.
-- **Phase Two: LangChain Middleware Layer**
-  - Deploy LangChain middleware container, define service interface, logging models, and health endpoints.
-- **Phase Three: Direct Local Model Workflow Validation**
-  - Validate direct LangChain to local LLM logic, confirming tool selection and observation feedback loops.
-- **Phase Four: LiteLLM Routing Layer**
-  - Introduce LiteLLM proxy to abstract model endpoint targets, adding virtual keys and usage logging.
-- **Phase Five: Cloud Model Provider Integration**
-  - Add cloud-hosted frontier model APIs to LiteLLM, configuring fallback routes and failover controls.
-- **Phase Six: Routing and Escalation Logic**
-  - Implement confidence and complexity-based routing rules to determine when tasks escalate from local to cloud.
-- **Phase Seven: Headroom Integration**
-  - Place Headroom inline as an optimization proxy, configuring bypass filters for structured payloads.
-- **Phase Eight: OpenHands Integration**
-  - Integrate containerized OpenHands workspace into the model service chain.
-- **Phase Nine: Memory, Context, and Retrieval**
-  - Implement session context management, runtime task state tracking, and local vector retrieval.
-- **Phase Ten: Full Service Chain Validation**
-  - End-to-level system testing: routing, tool safety, escalation, and context compression.
-- **Phase Eleven: One-Click Modular Deployment**
-  - Write top-level orchestrators and environment installers for easy local workspace spin-up.
-  - *Includes Docker Compose configurations and systemd service profiles.*
-- **Phase Twelve: Documentation, Hardening, and Release Packaging**
-  - Audit security boundaries, complete API documentation, package release bundles, and baseline configurations.
+- **[Implementation Index (README)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/README.md)**
+- **[Phase 0: Repository Scaffold & Baseline Standards](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_0_scaffold.md)**
+- **[Phase 1: Local LLM Endpoint (vLLM)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_1_local_llm.md)**
+- **[Phase 2: LangChain Middleware Layer](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_2_langchain_middleware.md)**
+- **[Phase 3: Direct Local Model Workflow Validation](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_3_workflow_validation.md)**
+- **[Phase 4: LiteLLM Routing Layer](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_4_litellm_routing.md)**
+- **[Phase 5: Cloud Model Provider Integration](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_5_cloud_provider.md)**
+- **[Phase 6: Routing and Escalation Logic](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_6_routing_escalation.md)**
+- **[Phase 7: Headroom Integration](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_7_headroom_integration.md)**
+- **[Phase 8: OpenHands Integration](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_8_openhands_integration.md)**
+- **[Phase 9: Memory, Context, and Retrieval (RAG)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_9_memory_retrieval.md)**
+- **[Phase 10: Full Service Chain Validation](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_10_full_chain_validation.md)**
+- **[Phase 11: One-Click Modular Deployment](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_11_one_click_deployment.md)**
+- **[Phase 12: Hardening & Packaging](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_12_hardening_packaging.md)**
+
+---
+
+## **Getting Started & Operations**
+
+This section describes how to **start**, **stop**, and **health-check** the aMMare container stack.
+
+### **1. Starting Services**
+
+Deploy the platform by specifying the target environment profile (default is `minimal-local`).
+
+```bash
+# Sourcing profile defaults and deploying the containers
+./scripts/deploy.sh -p [minimal-local | hybrid | full]
+```
+
+- **minimal-local**: Deploys only `ammare-local-llm` and `ammare-langchain`.
+- **hybrid**: Deploys `ammare-local-llm`, `ammare-litellm`, and `ammare-langchain`.
+- **full**: Deploys the complete stack (Qdrant, OpenHands, Headroom, LiteLLM, local LLM, and LangChain).
+
+### **2. Stopping Services**
+
+Safely stop all running containers, dismantle internal Docker networks, and clean caches:
+
+```bash
+# Normal teardown (retains downloaded model caches)
+./scripts/uninstall.sh
+
+# Complete purge (removes all container data volumes and model caches)
+./scripts/uninstall.sh -x
+```
+
+### **3. Running Health Checks and Validations**
+
+Detects the active deployment profile and fires corresponding network, routing, and functional smoke tests:
+
+```bash
+./scripts/validate.sh
+```
+
+To run individual service checks manually:
+
+- **Local LLM Health:** `curl http://localhost:8000/v1/models`
+- **LangChain Health:** `curl http://localhost:8080/health`
+- **LiteLLM Health:** `curl http://localhost:4000/ping`
+
+---
+
+## **Developer Guidelines for AI Coding Agents**
+
+All coding agents operating on this repository must consult and follow the [rules.md](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/rules.md) file. Any changes made must be logged in [WORKLOG.md](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/WORKLOG.md).
