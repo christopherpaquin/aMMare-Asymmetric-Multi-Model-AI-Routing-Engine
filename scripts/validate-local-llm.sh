@@ -37,7 +37,7 @@ for i in {1..30}; do
             "max_tokens": 10
           }')
 
-        if echo "$RESPONSE" | grep -q "success"; then
+        if echo "$RESPONSE" | grep -iq "success"; then
             echo -e "${GREEN}[PASS] Chat completion test succeeded!${NC}"
             exit 0
         else
