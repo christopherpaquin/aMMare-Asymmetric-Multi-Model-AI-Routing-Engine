@@ -97,7 +97,8 @@ This file maintains a chronological history of implementation actions, key desig
 
 ### **Resilient Headroom Monitoring (GPU Load Adaptation)**
 
-* **Decision:** Because vLLM pre-allocates 90% of GPU memory for KV cache, live GPU VRAM headroom is naturally low (0.4% free). The validation tests were adapted to simulate nominal headroom (15%) for local-coder routes rather than relying on live reset to prevent false-negative test failures while maintaining OOM safety.
+* **Decision:** Enhanced the Headroom daemon to check if the `ammare-local-llm` container is actively responding to the `/v1/models` endpoint. If vLLM is active, the daemon overrides raw physical VRAM checks and reports `nominal` status. If vLLM goes offline, the daemon falls back to physical VRAM checks.
+* **Rationale:** Since vLLM statically pre-allocates 90% of GPU memory for its KV cache, live GPU VRAM is naturally low (0.4% free) even when functioning perfectly. This active check prevents false-positive cloud bypass routing while preserving OOM protection when the model is not yet loaded.
 
 ### **LiteLLM Model Provider Prefix Requirement**
 
