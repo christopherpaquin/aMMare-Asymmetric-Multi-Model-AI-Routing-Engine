@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  ammare-openhands:
+    image: ghcr.io/all-hands-ai/openhands:0.14
+    container_name: ammare-openhands
+    restart: always
+    ports:
+      - "${AMMARE_OPENHANDS_PORT}:3000"
+    environment:
+      - SANDBOX_USER_ID=1000
+      - WORKSPACE_BASE=${AMMARE_WORKSPACE_BASE}
+      - LLM_BASE_URL=http://ammare-litellm:4000/v1
+      - LLM_MODEL=openai/local-coder
+      - LLM_API_KEY=${LITELLM_MASTER_KEY}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${AMMARE_WORKSPACE_BASE}:/app/workspace
+    networks:
+      - ammare-network
+
+networks:
+  ammare-network:
+    external: true
+    name: ammare-network

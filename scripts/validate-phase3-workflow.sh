@@ -7,6 +7,10 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0;0m'
+SUDO=""
+if [ "$(id -u)" -ne 0 ]; then
+    SUDO="sudo"
+fi
 
 # Source environment
 if [ -f env/langchain.env ]; then
@@ -38,7 +42,7 @@ fi
 
 # Test Case 2: Graceful Error Handling (Backend Down)
 echo -e "${BLUE}[INFO] Test Case 2: Stopping local-llm endpoint to test failure mode...${NC}"
-sudo docker stop ammare-local-llm > /dev/null
+$SUDO docker stop ammare-local-llm > /dev/null
 
 echo -e "${BLUE}[INFO] Dispatching request with disabled model backend...${NC}"
 HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${LC_URL}/query" \
@@ -50,17 +54,17 @@ if [ "$HTTP_STATUS" -eq 502 ]; then
 else
     echo -e "${RED}[FAIL] Test Case 2: Expected HTTP 502, got HTTP $HTTP_STATUS${NC}"
     # Make sure we start the container back up before failing out
-    sudo docker start ammare-local-llm > /dev/null
+    $SUDO docker start ammare-local-llm > /dev/null
     exit 1
 fi
 
 # Test Case 3: Automatic Recovery
 echo -e "${BLUE}[INFO] Test Case 3: Restarting ammare-local-llm container...${NC}"
-sudo docker start ammare-local-llm > /dev/null
+$SUDO docker start ammare-local-llm > /dev/null
 
 echo -e "${BLUE}[INFO] Waiting for model to reload (this can take up to 2 minutes)...${NC}"
 # Wait for backend to recover
-sudo ./scripts/validate-local-llm.sh
+$SUDO ./scripts/validate-local-llm.sh
 
 echo -e "${BLUE}[INFO] Retrying integration query after backend recovery...${NC}"
 RESPONSE_RETRY=$(curl -s -X POST "${LC_URL}/query" \

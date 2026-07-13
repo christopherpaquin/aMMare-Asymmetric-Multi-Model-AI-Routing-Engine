@@ -13,6 +13,11 @@ services:
       - AMMARE_MODEL_GATEWAY_URL=${AMMARE_MODEL_GATEWAY_URL}
       - AMMARE_LANGCHAIN_MODEL_NAME=${AMMARE_LANGCHAIN_MODEL_NAME}
       - AMMARE_LANGCHAIN_LOG_LEVEL=${AMMARE_LANGCHAIN_LOG_LEVEL}
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY}
+      - AMMARE_HEADROOM_URL=${AMMARE_HEADROOM_URL}
+    volumes:
+      - ../../config/models.yaml:/app/config/models.yaml
+      - ../../config/routing.yaml:/app/config/routing.yaml
     networks:
       - ammare-network
 

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  ammare-litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: ammare-litellm
+    restart: always
+    ports:
+      - "${AMMARE_LITELLM_PORT}:4000"
+    env_file:
+      - ../../env/litellm.env
+      - ../../env/secrets.env
+    volumes:
+      - "${AMMARE_LITELLM_CONFIG_PATH}:/app/config.yaml"
+    command: [ "--config", "/app/config.yaml", "--port", "4000" ]
+    networks:
+      - ammare-network
+
+networks:
+  ammare-network:
+    external: true
+    name: ammare-network

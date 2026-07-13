@@ -1,0 +1,30 @@
+model_list:
+  - model_name: local-coder
+    litellm_params:
+      model: openai/Qwen/Qwen2.5-Coder-7B-Instruct
+      api_base: http://ammare-local-llm:8000/v1
+      api_key: ignored-for-local # pragma: allowlist secret
+      tpm: 100000
+      rpm: 1000
+
+  - model_name: cloud-reasoner
+    litellm_params:
+      model: anthropic/claude-3-5-sonnet-20241022
+      api_key: os.environ/ANTHROPIC_API_KEY # pragma: allowlist secret
+      tpm: 80000
+      rpm: 1000
+
+  - model_name: cloud-fallback
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY # pragma: allowlist secret
+      tpm: 80000
+      rpm: 1000
+
+router_settings:
+  routing_strategy: latency-based-routing
+  enable_pre_call_checks: true
+
+general_settings:
+  master_key: sk-ammare-master-key-12345
+  store_model_in_db: false

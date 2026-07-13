@@ -1,0 +1,14 @@
+routing_rules:
+  default_route: local-coder
+  escalation_triggers:
+    keywords:
+      - "architect"
+      - "debug complex"
+      - "design system"
+      - "optimize database"
+      - "asymmetric routing"
+    max_length_threshold: 4000  # Characters
+  fallback_chain:
+    local-coder: cloud-reasoner
+    cloud-reasoner: cloud-fallback
+    cloud-fallback: null

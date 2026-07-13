@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  ammare-qdrant:
+    image: qdrant/qdrant:latest
+    container_name: ammare-qdrant
+    restart: always
+    ports:
+      - "${AMMARE_QDRANT_PORT}:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    networks:
+      - ammare-network
+
+volumes:
+  qdrant-data:
+
+networks:
+  ammare-network:
+    external: true
+    name: ammare-network
