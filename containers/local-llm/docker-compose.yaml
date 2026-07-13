@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  ammare-local-llm:
+    image: vllm/vllm-openai:latest
+    container_name: ammare-local-llm
+    restart: always
+    ports:
+      - "${AMMARE_LOCAL_LLM_PORT}:8000"
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}
+      - VLLM_USE_MODELSCOPE=False
+    volumes:
+      - "${AMMARE_LOCAL_LLM_CACHE_DIR}:/root/.cache/huggingface"
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - ammare-network
+    command: >
+      --model ${AMMARE_LOCAL_LLM_MODEL_NAME}
+      --tensor-parallel-size ${AMMARE_LOCAL_LLM_TENSOR_PARALLEL_SIZE}
+      --max-model-len ${AMMARE_LOCAL_LLM_MAX_MODEL_LEN}
+      --gpu-memory-utilization ${AMMARE_LOCAL_LLM_GPU_MEM_UTIL}
+      --trust-remote-code
+
+networks:
+  ammare-network:
+    external: true
+    name: ammare-network

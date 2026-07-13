@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  ammare-langchain:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ammare-langchain
+    restart: always
+    ports:
+      - "${AMMARE_LANGCHAIN_PORT}:8080"
+    environment:
+      - AMMARE_MODEL_GATEWAY_URL=${AMMARE_MODEL_GATEWAY_URL}
+      - AMMARE_LANGCHAIN_MODEL_NAME=${AMMARE_LANGCHAIN_MODEL_NAME}
+      - AMMARE_LANGCHAIN_LOG_LEVEL=${AMMARE_LANGCHAIN_LOG_LEVEL}
+    networks:
+      - ammare-network
+
+networks:
+  ammare-network:
+    external: true
+    name: ammare-network
