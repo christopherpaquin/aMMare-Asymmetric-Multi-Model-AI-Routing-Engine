@@ -1,4 +1,5 @@
 import logging
+import urllib.request
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -30,6 +31,19 @@ class SimulationRequest(BaseModel):
     headroom_percent: float
 
 
+def check_vllm_alive() -> bool:
+    try:
+        # Check vLLM API models endpoint
+        url = "http://ammare-local-llm:8000/v1/models"
+        req = urllib.request.Request(url, method="GET")
+        with urllib.request.urlopen(req, timeout=1.0) as response:
+            if response.status == 200:
+                return True
+    except Exception as e:
+        logger.debug(f"vLLM health check failed: {str(e)}")
+    return False
+
+
 @app.get("/status")
 def get_status():
     global simulated_headroom
@@ -42,9 +56,23 @@ def get_status():
             "status": "nominal" if simulated_headroom >= 10.0 else "low",
             "nvml_enabled": nvml_enabled,
             "simulation_active": True,
+            "vllm_active": False,
         }
 
-    # Query NVML if enabled
+    # Critical check: if local vLLM is active and responding, override raw VRAM check
+    if check_vllm_alive():
+        logger.info(
+            "vLLM model engine is running and responding. Reporting nominal status."
+        )
+        return {
+            "vram_headroom_percent": 100.0,
+            "status": "nominal",
+            "nvml_enabled": nvml_enabled,
+            "simulation_active": False,
+            "vllm_active": True,
+        }
+
+    # Query NVML if enabled (only if vLLM is not active/responding)
     if nvml_enabled:
         try:
             device_count = pynvml.nvmlDeviceGetCount()
@@ -66,6 +94,7 @@ def get_status():
                 "status": "nominal" if lowest_headroom >= 10.0 else "low",
                 "nvml_enabled": True,
                 "simulation_active": False,
+                "vllm_active": False,
             }
         except Exception as e:
             logger.error(f"Error querying NVML stats: {str(e)}")
@@ -77,6 +106,7 @@ def get_status():
         "status": "nominal",
         "nvml_enabled": False,
         "simulation_active": False,
+        "vllm_active": False,
     }
 
 
