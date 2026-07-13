@@ -80,21 +80,21 @@ The system is designed around a physical service-chain model. Requests flow from
 
 The setup, integration, and security implementation steps are documented in detail across the following step-by-step guides and overview documents:
 
-- **[Implementation & Integration Overview (Roadmap)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/architecture/implementation_overview.md)**
-- **[Implementation Index (README)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/README.md)**
-- **[Phase 0: Repository Scaffold & Baseline Standards](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_0_scaffold.md)**
-- **[Phase 1: Local LLM Endpoint (vLLM)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_1_local_llm.md)**
-- **[Phase 2: LangChain Middleware Layer](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_2_langchain_middleware.md)**
-- **[Phase 3: Direct Local Model Workflow Validation](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_3_workflow_validation.md)**
-- **[Phase 4: LiteLLM Routing Layer](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_4_litellm_routing.md)**
-- **[Phase 5: Cloud Model Provider Integration](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_5_cloud_provider.md)**
-- **[Phase 6: Routing and Escalation Logic](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_6_routing_escalation.md)**
-- **[Phase 7: Headroom Integration](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_7_headroom_integration.md)**
-- **[Phase 8: OpenHands Integration](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_8_openhands_integration.md)**
-- **[Phase 9: Memory, Context, and Retrieval (RAG)](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_9_memory_retrieval.md)**
-- **[Phase 10: Full Service Chain Validation](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_10_full_chain_validation.md)**
-- **[Phase 11: One-Click Modular Deployment](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_11_one_click_deployment.md)**
-- **[Phase 12: Hardening & Packaging](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/implementation/phase_12_hardening_packaging.md)**
+- **[Implementation & Integration Overview (Roadmap)](architecture/implementation_overview.md)**
+- **[Implementation Index (README)](implementation/README.md)**
+- **[Phase 0: Repository Scaffold & Baseline Standards](implementation/phase_0_scaffold.md)**
+- **[Phase 1: Local LLM Endpoint (vLLM)](implementation/phase_1_local_llm.md)**
+- **[Phase 2: LangChain Middleware Layer](implementation/phase_2_langchain_middleware.md)**
+- **[Phase 3: Direct Local Model Workflow Validation](implementation/phase_3_workflow_validation.md)**
+- **[Phase 4: LiteLLM Routing Layer](implementation/phase_4_litellm_routing.md)**
+- **[Phase 5: Cloud Model Provider Integration](implementation/phase_5_cloud_provider.md)**
+- **[Phase 6: Routing and Escalation Logic](implementation/phase_6_routing_escalation.md)**
+- **[Phase 7: Headroom Integration](implementation/phase_7_headroom_integration.md)**
+- **[Phase 8: OpenHands Integration](implementation/phase_8_openhands_integration.md)**
+- **[Phase 9: Memory, Context, and Retrieval (RAG)](implementation/phase_9_memory_retrieval.md)**
+- **[Phase 10: Full Service Chain Validation](implementation/phase_10_full_chain_validation.md)**
+- **[Phase 11: One-Click Modular Deployment](implementation/phase_11_one_click_deployment.md)**
+- **[Phase 12: Hardening & Packaging](implementation/phase_12_hardening_packaging.md)**
 
 ---
 
@@ -145,4 +145,4 @@ To run individual service checks manually:
 
 ## **Developer Guidelines for AI Coding Agents**
 
-All coding agents operating on this repository must consult and follow the [rules.md](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/rules.md) file. Any changes made must be logged in [WORKLOG.md](file:///home/cpaquin/Workspace/Git/aMMare-Asymmetric-Multi-Model-AI-Routing-Engine/WORKLOG.md).
+All coding agents operating on this repository must consult and follow the [rules.md](rules.md) file. Any changes made must be logged in [WORKLOG.md](WORKLOG.md).
